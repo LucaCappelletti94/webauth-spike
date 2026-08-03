@@ -1,0 +1,15 @@
+{
+  "name": "webauth-probe-rust",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "webauth_probe_rust_bg.wasm",
+    "webauth_probe_rust.js",
+    "webauth_probe_rust.d.ts"
+  ],
+  "main": "webauth_probe_rust.js",
+  "types": "webauth_probe_rust.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
