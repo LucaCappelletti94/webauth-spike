@@ -10,7 +10,9 @@
 //! different construction. If it prompts differently, or invalidates on a fingerprint
 //! change, or offers no passcode fallback, that gap is what an upstream proposal asks for.
 //!
-//! Run on macOS: `cargo run --bin apple_keyring_probe`.
+//! Like the security-framework probe, this uses the data protection keychain and so needs a
+//! code-signed binary carrying a keychain access group. Build, ad-hoc sign, run the signed
+//! binary directly. See the README. The access group must match entitlements.plist.
 
 use std::io::{self, Write};
 
@@ -19,6 +21,8 @@ use apple_native_keyring_store::protected::{AccessPolicy, Cred};
 const SERVICE: &str = "connetto-probe";
 const ACCOUNT: &str = "probe@example.invalid";
 const SECRET: &[u8] = b"connetto-probe-secret";
+// Must match the keychain-access-groups entry in entitlements.plist.
+const ACCESS_GROUP: &str = "connetto.probe";
 
 fn prompt(msg: &str) -> String {
     print!("{msg}");
@@ -50,6 +54,17 @@ fn jstr(s: &str) -> String {
     out
 }
 
+fn print_signing_help() {
+    println!();
+    println!(
+        "The data protection keychain needs a code-signed binary with a keychain access group."
+    );
+    println!("Build, ad-hoc sign against the entitlements, then run the signed binary directly:");
+    println!("  cargo build --bin apple_keyring_probe");
+    println!("  codesign --force --sign - --entitlements entitlements.plist target/debug/apple_keyring_probe");
+    println!("  ./target/debug/apple_keyring_probe");
+}
+
 fn main() {
     println!("== macOS apple-native-keyring-store probe (N3) ==\n");
 
@@ -57,7 +72,7 @@ fn main() {
         SERVICE,
         ACCOUNT,
         AccessPolicy::RequireUserPresence,
-        None,
+        Some(ACCESS_GROUP.to_string()),
         false,
     ) {
         Ok(e) => e,
@@ -85,28 +100,37 @@ fn main() {
                     read_ok = bytes == SECRET;
                     println!("read returned {} bytes, matches: {read_ok}", bytes.len());
                     prompt_seen = ask_bool("did a biometric prompt appear");
-                    passcode_ok = ask_bool("was a passcode fallback offered (answer n if none, or if you did not try it)");
+                    passcode_ok = ask_bool(
+                        "was a passcode fallback offered (answer n if none, or if you did not try it)",
+                    );
                 }
                 Err(e) => println!("read failed: {e}"),
             }
-        }
-        Err(e) => println!("store failed: {e}"),
-    }
 
-    // Same fingerprint-set change as N2, through the library this time.
-    println!("\n-- fingerprint-set change (as in N2) --");
-    println!("change the enrolled fingerprint set in System Settings, then return here.");
-    prompt("press Enter once the fingerprint set has changed...");
-    match entry.get_secret() {
-        Ok(bytes) => {
-            let ok = bytes == SECRET;
-            println!(
-                "read after fingerprint change returned {} bytes, matches: {ok}",
-                bytes.len()
-            );
-            survived = ok && ask_bool("did the item still open after the fingerprint change");
+            // Same fingerprint-set change as N2, through the library this time.
+            println!("\n-- fingerprint-set change (as in N2) --");
+            println!("change the enrolled fingerprint set in System Settings, then return here.");
+            prompt("press Enter once the fingerprint set has changed...");
+            match entry.get_secret() {
+                Ok(bytes) => {
+                    let ok = bytes == SECRET;
+                    println!(
+                        "read after fingerprint change returned {} bytes, matches: {ok}",
+                        bytes.len()
+                    );
+                    survived =
+                        ok && ask_bool("did the item still open after the fingerprint change");
+                }
+                Err(e) => println!("read after fingerprint change failed: {e} (did NOT survive)"),
+            }
         }
-        Err(e) => println!("read after fingerprint change failed: {e} (did NOT survive)"),
+        Err(e) => {
+            println!("store failed: {e}");
+            print_signing_help();
+            println!(
+                "\nskipping the read and the fingerprint-change step because nothing was stored."
+            );
+        }
     }
 
     let notes = prompt(
@@ -124,7 +148,7 @@ fn main() {
         "    \"N3\": {{ \"pass\": {}, \"value\": {} }}",
         pass,
         jstr(&format!(
-            "RequireUserPresence; prompt={}, passcode fallback={}, survives fingerprint change={}",
+            "RequireUserPresence: prompt={}, passcode fallback={}, survives fingerprint change={}",
             prompt_seen, passcode_ok, survived
         ))
     );

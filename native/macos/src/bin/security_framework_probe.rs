@@ -6,8 +6,14 @@
 //! N2: after the operator changes the enrolled fingerprint set, read again. biometry-any
 //! should still open, unlike biometry-current-set which invalidates on exactly that change.
 //!
+//! Access-control items live in the data protection keychain, which on macOS is only
+//! reachable from a code-signed binary carrying a keychain access group entitlement.
+//! `cargo run` produces an unsigned binary and fails with a missing-entitlement error, so
+//! build, ad-hoc sign against entitlements.plist, and run the signed binary directly. See
+//! the README. The access group here must match the keychain-access-groups entry.
+//!
 //! Interactive: each read triggers a real prompt, so the binary pauses and records what
-//! the operator saw. Run on macOS: `cargo run --bin security_framework_probe`.
+//! the operator saw.
 
 use std::io::{self, Write};
 
@@ -19,6 +25,8 @@ use security_framework::passwords::{
 const SERVICE: &str = "connetto-probe";
 const ACCOUNT: &str = "probe@example.invalid";
 const SECRET: &[u8] = b"connetto-probe-secret";
+// Must match the keychain-access-groups entry in entitlements.plist.
+const ACCESS_GROUP: &str = "connetto.probe";
 
 fn prompt(msg: &str) -> String {
     print!("{msg}");
@@ -58,15 +66,28 @@ fn store_protected() -> security_framework::base::Result<()> {
         | AccessControlOptions::OR;
     let mut opts = PasswordOptions::new_generic_password(SERVICE, ACCOUNT);
     opts.set_access_control_options(flags);
-    // Access-control items live in the data protection keychain.
     opts.use_protected_keychain();
+    opts.set_access_group(ACCESS_GROUP);
     set_generic_password_options(SECRET, opts)
 }
 
 fn read_protected() -> security_framework::base::Result<Vec<u8>> {
     let mut opts = PasswordOptions::new_generic_password(SERVICE, ACCOUNT);
     opts.use_protected_keychain();
+    opts.set_access_group(ACCESS_GROUP);
     generic_password(opts)
+}
+
+fn print_signing_help() {
+    println!();
+    println!(
+        "The data protection keychain needs a code-signed binary with a keychain access group."
+    );
+    println!("Build, ad-hoc sign against the entitlements, then run the signed binary directly");
+    println!("(cargo run rebuilds and strips the signature):");
+    println!("  cargo build --bin security_framework_probe");
+    println!("  codesign --force --sign - --entitlements entitlements.plist target/debug/security_framework_probe");
+    println!("  ./target/debug/security_framework_probe");
 }
 
 fn main() {
@@ -75,10 +96,12 @@ fn main() {
     // Clean slate so a stale item does not mask the store.
     let _ = delete_generic_password(SERVICE, ACCOUNT);
 
-    // N1: store then read.
     let mut n1_pass = false;
     let mut n1_prompt_seen = false;
     let mut n1_passcode_ok = false;
+    let mut n2_ran = false;
+    let mut n2_pass = false;
+
     match store_protected() {
         Ok(()) => {
             println!("stored a biometry-any-or-passcode item.");
@@ -98,32 +121,42 @@ fn main() {
                 }
                 Err(e) => println!("read failed: {e}"),
             }
-        }
-        Err(e) => println!("store failed: {e}"),
-    }
 
-    // N2: fingerprint-set change, then read again.
-    println!("\n-- N2: change the enrolled fingerprint set --");
-    println!("in System Settings, add or remove a fingerprint in Touch ID and Password, then return here.");
-    prompt("press Enter once the fingerprint set has changed...");
-    let mut n2_pass = false;
-    match read_protected() {
-        Ok(bytes) => {
-            let ok = bytes == SECRET;
-            println!(
-                "read after fingerprint change returned {} bytes, matches: {ok}",
-                bytes.len()
-            );
-            let opened = ask_bool("did biometry-any still open the item (expected yes)");
-            n2_pass = ok && opened;
+            // N2 only makes sense once an item exists.
+            println!("\n-- N2: change the enrolled fingerprint set --");
+            println!("in System Settings, add or remove a fingerprint in Touch ID and Password, then return here.");
+            prompt("press Enter once the fingerprint set has changed...");
+            n2_ran = true;
+            match read_protected() {
+                Ok(bytes) => {
+                    let ok = bytes == SECRET;
+                    println!(
+                        "read after fingerprint change returned {} bytes, matches: {ok}",
+                        bytes.len()
+                    );
+                    let opened = ask_bool("did biometry-any still open the item (expected yes)");
+                    n2_pass = ok && opened;
+                }
+                Err(e) => {
+                    println!("read after fingerprint change failed: {e}");
+                    println!("if this failed, biometry-any did NOT survive the change, which is the finding for N2.");
+                }
+            }
         }
         Err(e) => {
-            println!("read after fingerprint change failed: {e}");
-            println!("if this failed, biometry-any did NOT survive the change, which is the finding for N2.");
+            println!("store failed: {e}");
+            print_signing_help();
+            println!("\nskipping N1 read and N2 because nothing was stored.");
         }
     }
 
     let notes = prompt("\nfree-text notes (prompts seen, anything surprising): ");
+
+    let n2_value = if n2_ran {
+        "biometry-any survives fingerprint-set change"
+    } else {
+        "skipped, store failed (see stdout for signing instructions)"
+    };
 
     println!("\n== report JSON ==");
     println!("{{");
@@ -135,14 +168,14 @@ fn main() {
         "    \"N1\": {{ \"pass\": {}, \"value\": {} }},",
         n1_pass,
         jstr(&format!(
-            "biometry-any+passcode; touch id prompt={}, passcode fallback ok={}",
+            "biometry-any+passcode: touch id prompt={}, passcode fallback ok={}",
             n1_prompt_seen, n1_passcode_ok
         ))
     );
     println!(
         "    \"N2\": {{ \"pass\": {}, \"value\": {} }}",
         n2_pass,
-        jstr("biometry-any survives fingerprint-set change")
+        jstr(n2_value)
     );
     println!("  }},");
     println!("  \"reflect_fallbacks\": [],");
