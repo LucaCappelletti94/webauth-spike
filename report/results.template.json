@@ -1,0 +1,2316 @@
+[
+  {
+    "os": "Android (device)",
+    "browser": "Chrome",
+    "provider": "its own platform authenticator",
+    "leg": "js",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Highest value in the study. Chrome for Android is 44.75% of tracked global usage and 92.9% of Android.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "Android (device)",
+    "browser": "Chrome",
+    "provider": "its own platform authenticator",
+    "leg": "rust",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Highest value in the study. Chrome for Android is 44.75% of tracked global usage and 92.9% of Android.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "iOS (iPhone 15 Pro)",
+    "browser": "Safari",
+    "provider": "iCloud Keychain platform authenticator",
+    "leg": "js",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Second highest. Safari on iOS is 12.72% of tracked usage. iCloud Keychain support is implied by Safari 18 but never confirmed for the authenticator.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "iOS (iPhone 15 Pro)",
+    "browser": "Safari",
+    "provider": "iCloud Keychain platform authenticator",
+    "leg": "rust",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Second highest. Safari on iOS is 12.72% of tracked usage. iCloud Keychain support is implied by Safari 18 but never confirmed for the authenticator.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "Android (device)",
+    "browser": "Chrome",
+    "provider": "synced software passkey",
+    "leg": "js",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: The undocumented question, on the platform with the most users.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "Android (device)",
+    "browser": "Chrome",
+    "provider": "synced software passkey",
+    "leg": "rust",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: The undocumented question, on the platform with the most users.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "Ubuntu 24.04",
+    "browser": "Chrome",
+    "provider": "synced software passkey",
+    "leg": "js",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Same undocumented question on desktop.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "Ubuntu 24.04",
+    "browser": "Chrome",
+    "provider": "synced software passkey",
+    "leg": "rust",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Same undocumented question on desktop.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "Windows",
+    "browser": "Chrome and Edge",
+    "provider": "synced software passkey",
+    "leg": "js",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Same question, third desktop.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "Windows",
+    "browser": "Chrome and Edge",
+    "provider": "synced software passkey",
+    "leg": "rust",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Same question, third desktop.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "iPadOS (iPad A16)",
+    "browser": "Safari",
+    "provider": "iCloud Keychain platform authenticator",
+    "leg": "js",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Different hardware from the phone, do not assume it matches.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "iPadOS (iPad A16)",
+    "browser": "Safari",
+    "provider": "iCloud Keychain platform authenticator",
+    "leg": "rust",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Different hardware from the phone, do not assume it matches.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "Windows",
+    "browser": "Chrome and Edge",
+    "provider": "Windows Hello",
+    "leg": "js",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Also answers whether native work is needed for browser users at all.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "Windows",
+    "browser": "Chrome and Edge",
+    "provider": "Windows Hello",
+    "leg": "rust",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Also answers whether native work is needed for browser users at all.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "macOS",
+    "browser": "Safari",
+    "provider": "iCloud Keychain platform authenticator",
+    "leg": "js",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: The desktop half of the Apple question.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "macOS",
+    "browser": "Safari",
+    "provider": "iCloud Keychain platform authenticator",
+    "leg": "rust",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: The desktop half of the Apple question.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "macOS",
+    "browser": "Chrome",
+    "provider": "whatever Chrome offers",
+    "leg": "js",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Two providers on one system, likely to differ.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "macOS",
+    "browser": "Chrome",
+    "provider": "whatever Chrome offers",
+    "leg": "rust",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Two providers on one system, likely to differ.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "iOS (iPhone)",
+    "browser": "Chrome",
+    "provider": "system web view",
+    "leg": "js",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Uses the system engine rather than its own, so it may match Safari or expose nothing.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "iOS (iPhone)",
+    "browser": "Chrome",
+    "provider": "system web view",
+    "leg": "rust",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Uses the system engine rather than its own, so it may match Safari or expose nothing.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "Android (emulator)",
+    "browser": "Chrome",
+    "provider": "virtual platform authenticator",
+    "leg": "js",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Only to compare against the physical device, per A4.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "Android (emulator)",
+    "browser": "Chrome",
+    "provider": "virtual platform authenticator",
+    "leg": "rust",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Only to compare against the physical device, per A4.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "iOS (simulator)",
+    "browser": "Safari",
+    "provider": "virtual authenticator",
+    "leg": "js",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Only to compare against the physical device, per I4.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "iOS (simulator)",
+    "browser": "Safari",
+    "provider": "virtual authenticator",
+    "leg": "rust",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Only to compare against the physical device, per I4.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "Android",
+    "browser": "WebView",
+    "provider": "none expected",
+    "leg": "js",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Confirms the surface has no gate at all, per A5.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "Android",
+    "browser": "WebView",
+    "provider": "none expected",
+    "leg": "rust",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Confirms the surface has no gate at all, per A5.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "Ubuntu 24.04",
+    "browser": "Chrome",
+    "provider": "hardware security key",
+    "leg": "js",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: The hmac-secret path, expected most reliable, establishes a floor.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "Ubuntu 24.04",
+    "browser": "Chrome",
+    "provider": "hardware security key",
+    "leg": "rust",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: The hmac-secret path, expected most reliable, establishes a floor.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "macOS",
+    "browser": "Chrome or Safari",
+    "provider": "hardware security key",
+    "leg": "js",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Same floor on a second system.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "macOS",
+    "browser": "Chrome or Safari",
+    "provider": "hardware security key",
+    "leg": "rust",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Same floor on a second system.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "Android (device)",
+    "browser": "Chrome",
+    "provider": "hardware key over USB or NFC",
+    "leg": "js",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Same floor on the largest platform.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "Android (device)",
+    "browser": "Chrome",
+    "provider": "hardware key over USB or NFC",
+    "leg": "rust",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Same floor on the largest platform.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "Ubuntu 24.04",
+    "browser": "Chrome",
+    "provider": "phone over cross-device transport",
+    "leg": "js",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Reaches the phone's authenticator from a desktop.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "Ubuntu 24.04",
+    "browser": "Chrome",
+    "provider": "phone over cross-device transport",
+    "leg": "rust",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Reaches the phone's authenticator from a desktop.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "Ubuntu 24.04",
+    "browser": "Firefox",
+    "provider": "whatever it offers",
+    "leg": "js",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Version 139 or later.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "Ubuntu 24.04",
+    "browser": "Firefox",
+    "provider": "whatever it offers",
+    "leg": "rust",
+    "results": {
+      "Q1": {
+        "pass": null,
+        "value": ""
+      },
+      "Q2": {
+        "pass": null,
+        "value": ""
+      },
+      "Q3": {
+        "pass": null,
+        "value": ""
+      },
+      "Q4": {
+        "pass": null,
+        "value": ""
+      },
+      "Q5": {
+        "pass": null,
+        "value": ""
+      },
+      "Q6": {
+        "pass": null,
+        "value": ""
+      },
+      "Q7": {
+        "pass": null,
+        "value": ""
+      },
+      "Q8": {
+        "pass": null,
+        "value": ""
+      },
+      "Q9": {
+        "pass": null,
+        "value": ""
+      },
+      "Q10": {
+        "pass": null,
+        "value": ""
+      },
+      "Q11": {
+        "pass": null,
+        "value": ""
+      },
+      "Q12": {
+        "pass": null,
+        "value": ""
+      },
+      "Q13": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Version 139 or later.  (fill in what actually happened, and which provider truly answered)"
+  },
+  {
+    "os": "macOS",
+    "browser": "",
+    "provider": "macOS Keychain, security-framework",
+    "leg": "native",
+    "results": {
+      "N1": {
+        "pass": null,
+        "value": ""
+      },
+      "N2": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Raw capability: biometry-any combined with device passcode, and survival of a fingerprint-set change."
+  },
+  {
+    "os": "macOS",
+    "browser": "",
+    "provider": "apple-native-keyring-store (protected)",
+    "leg": "native",
+    "results": {
+      "N3": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Does the existing library already suffice. N1 against N3 is the whole upstream question."
+  },
+  {
+    "os": "Windows",
+    "browser": "",
+    "provider": "Windows Hello",
+    "leg": "native",
+    "results": {
+      "W1": {
+        "pass": null,
+        "value": ""
+      },
+      "W2": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: W1 is insufficient (a check our own code runs). W2 signing determinism decides whether a native gate exists."
+  },
+  {
+    "os": "Android",
+    "browser": "",
+    "provider": "Android Keystore",
+    "leg": "native",
+    "results": {
+      "A6": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: Does set_user_authentication_required actually gate. Android counterpart of N3."
+  },
+  {
+    "os": "iOS (iPhone 15 Pro)",
+    "browser": "",
+    "provider": "iOS Keychain, security-framework",
+    "leg": "native",
+    "results": {
+      "N1": {
+        "pass": null,
+        "value": ""
+      },
+      "N3": {
+        "pass": null,
+        "value": ""
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "WHY: I5: run N1 and N3 on the phone. Face ID rather than Touch ID may change fallback behaviour."
+  }
+]

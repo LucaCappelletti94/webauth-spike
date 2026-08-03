@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PRF probe (JavaScript leg)</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 1rem; max-width: 60rem; }
+  h1 { font-size: 1.2rem; }
+  fieldset { margin: 0.6rem 0; }
+  legend { font-weight: 600; }
+  button { margin: 0.15rem; padding: 0.35rem 0.6rem; }
+  label { display: inline-block; }
+  input[type=text] { width: 100%; font-family: monospace; }
+  .row { padding: 0.2rem 0.4rem; border-bottom: 1px solid #ddd; font-family: monospace; font-size: 0.85rem; white-space: pre-wrap; }
+  .pass { color: #0a0; }
+  .fail { color: #c00; }
+  .info { color: #555; }
+  textarea { width: 100%; height: 14rem; font-family: monospace; font-size: 0.8rem; }
+  .grid { display: grid; grid-template-columns: 8rem 1fr; gap: 0.3rem; align-items: center; }
+</style>
+</head>
+<body>
+<h1>WebAuthn PRF probe: JavaScript leg</h1>
+<p class="info">Control leg. Serve over http://localhost or https, never file://. One question per button. Each appends a row and accumulates into the report. The last button emits section 8 JSON.</p>
+
+<fieldset>
+  <legend>Run metadata (edit to match reality)</legend>
+  <div class="grid">
+    <label for="os">os</label><input type="text" id="os" placeholder="Ubuntu 24.04">
+    <label for="browser">browser</label><input type="text" id="browser" placeholder="Chrome 141">
+    <label for="provider">provider</label><input type="text" id="provider" placeholder="which authenticator actually answered">
+    <label for="notes">notes</label><input type="text" id="notes" placeholder="chooser options, unexpected prompts, anything that felt wrong">
+  </div>
+  <p class="info">provider is the single most important field. On Chrome a chooser appears, so record which option you actually picked.</p>
+</fieldset>
+
+<fieldset>
+  <legend>Carried state (survives export for Q13)</legend>
+  <div class="grid">
+    <label for="credId">cred id (hex)</label><input type="text" id="credId" placeholder="filled on create, editable so you can paste it back after clearing site data">
+    <label for="credId2">cred id 2 (hex)</label><input type="text" id="credId2" placeholder="second credential for Q7">
+    <label for="baseA">baseline A (hex)</label><input type="text" id="baseA" placeholder="first PRF output for input A, compared by Q5 / Q12 / Q13">
+  </div>
+  <p class="info">Copy these three out before a browser restart (Q12) or before clearing site data (Q13). Paste them back to compare across the wipe.</p>
+</fieldset>
+
+<fieldset>
+  <legend>Core viability</legend>
+  <button id="q1">Q1 capabilities</button>
+  <button id="create">Create credential (Q2, Q3, Q10 setup)</button>
+  <button id="assertA">Assert input A (Q4, Q5, Q9, Q10, Q12, Q13)</button>
+</fieldset>
+
+<fieldset>
+  <legend>Properties</legend>
+  <button id="assertAB">Assert A and B (Q6, Q8)</button>
+  <button id="q7">Second credential (Q7)</button>
+</fieldset>
+
+<fieldset>
+  <legend>Topology (Q11)</legend>
+  <button id="q11a">Create in worker (expect failure)</button>
+  <button id="q11b">Key handoff to worker</button>
+</fieldset>
+
+<fieldset>
+  <legend>Durability</legend>
+  <p class="info">Q12: assert A now, fully quit the browser, reopen this page, assert A again. Bytes must match the baseline. Q13: assert A now, copy the three carried fields out, clear site data for this origin, reload, paste the cred id and baseline back, assert A again. Bytes must match. Both reuse the Assert input A button above.</p>
+</fieldset>
+
+<fieldset>
+  <legend>Report</legend>
+  <button id="emit">Emit report JSON</button>
+  <button id="reset">Reset carried state</button>
+  <textarea id="out" placeholder="report JSON appears here"></textarea>
+</fieldset>
+
+<div id="log"></div>
+
+<script>
+"use strict";
+
+// Fixed values, section 3. The client hashes each input with its own prefix
+// before it reaches the authenticator, so supply them raw.
+const INPUT_A = "connetto-probe-salt-a";
+const INPUT_B = "connetto-probe-salt-b";
+const RP_NAME = "PRF probe";
+const USER_ID = new Uint8Array([...Array(16).keys()]); // 00 01 .. 0f
+const USER_NAME = "probe@example.invalid";
+const USER_DISPLAY = "Probe User";
+const PUBKEY_PARAMS = [ {type:"public-key", alg:-7}, {type:"public-key", alg:-257} ];
+
+const enc = (s) => new TextEncoder().encode(s);
+const rand = () => crypto.getRandomValues(new Uint8Array(32));
+const toHex = (buf) => [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,"0")).join("");
+const fromHex = (h) => new Uint8Array((h.trim().match(/.{1,2}/g) || []).map(x => parseInt(x,16)));
+
+const RESULTS = {};
+const $ = (id) => document.getElementById(id);
+
+function log(msg, cls) {
+  const div = document.createElement("div");
+  div.className = "row " + (cls || "info");
+  div.textContent = msg;
+  $("log").prepend(div);
+}
+
+function record(q, pass, value) {
+  RESULTS[q] = { pass, value: String(value) };
+  log(`${q}: ${pass ? "PASS" : "FAIL"}  ${value}`, pass ? "pass" : "fail");
+}
+
+function skip(q, why) {
+  RESULTS[q] = { pass: null, value: why };
+  log(`${q}: n/a  ${why}`, "info");
+}
+
+// Persist carried state to localStorage and mirror into the input fields.
+function saveState() {
+  try {
+    localStorage.setItem("prf_credId", $("credId").value);
+    localStorage.setItem("prf_credId2", $("credId2").value);
+    localStorage.setItem("prf_baseA", $("baseA").value);
+  } catch (e) { /* private mode */ }
+}
+function loadState() {
+  try {
+    $("credId").value = localStorage.getItem("prf_credId") || "";
+    $("credId2").value = localStorage.getItem("prf_credId2") || "";
+    $("baseA").value = localStorage.getItem("prf_baseA") || "";
+  } catch (e) { /* ignore */ }
+}
+loadState();
+
+function creationOptions(prfFirst) {
+  return { publicKey: {
+    challenge: rand(),
+    rp:   { id: location.hostname, name: RP_NAME },
+    user: { id: USER_ID, name: USER_NAME, displayName: USER_DISPLAY },
+    pubKeyCredParams: PUBKEY_PARAMS,
+    // residentKey discouraged is load-bearing for Q10: the design stores
+    // identifiers in the clear rather than relying on discoverable credentials.
+    authenticatorSelection: { residentKey: "discouraged", userVerification: "required" },
+    extensions: { prf: { eval: { first: enc(prfFirst) } } },
+  }};
+}
+
+function assertOptions(rawIdHex, first, second) {
+  const evalObj = second == null ? { first: enc(first) } : { first: enc(first), second: enc(second) };
+  return { publicKey: {
+    challenge: rand(),
+    rpId: location.hostname,
+    allowCredentials: [ { type: "public-key", id: fromHex(rawIdHex) } ],
+    userVerification: "required",
+    extensions: { prf: { eval: evalObj } },
+  }};
+}
+
+// ---- Q1: is the extension offered? ----
+$("q1").onclick = async () => {
+  try {
+    if (typeof PublicKeyCredential === "undefined") { record("Q1", false, "PublicKeyCredential undefined"); return; }
+    if (typeof PublicKeyCredential.getClientCapabilities !== "function") {
+      skip("Q1", "getClientCapabilities absent (expected below Chrome 133)");
+      return;
+    }
+    const caps = await PublicKeyCredential.getClientCapabilities();
+    const v = caps["extension:prf"];
+    record("Q1", v === true, `extension:prf=${v}`);
+    log("full capabilities: " + JSON.stringify(caps));
+  } catch (e) { record("Q1", false, "error: " + e); }
+};
+
+// ---- Create: Q2 enabled, Q3 output at creation ----
+$("create").onclick = async () => {
+  try {
+    const cred = await navigator.credentials.create(creationOptions(INPUT_A));
+    const idHex = toHex(cred.rawId);
+    $("credId").value = idHex;
+    saveState();
+    const ext = cred.getClientExtensionResults();
+    const prf = ext && ext.prf;
+    record("Q2", !!(prf && prf.enabled === true), `prf.enabled=${prf ? prf.enabled : "absent"}`);
+    if (prf && prf.results && prf.results.first) {
+      record("Q3", true, `output at creation, first.byteLength=${prf.results.first.byteLength}, ${toHex(prf.results.first)}`);
+    } else {
+      // Permitted by spec: creation may return no output, so an assertion is required.
+      record("Q3", false, "no prf.results at creation (assertion required, one extra gesture)");
+    }
+    log("created credential id " + idHex);
+  } catch (e) { record("Q2", false, "create error: " + e); }
+};
+
+// ---- Assert A: Q4 length, Q5 stability, Q9 UV, Q10 scoped, Q12/Q13 durability ----
+$("assertA").onclick = async () => {
+  const idHex = $("credId").value.trim();
+  if (!idHex) { log("no cred id, create first or paste one", "fail"); return; }
+  try {
+    const asrt = await navigator.credentials.get(assertOptions(idHex, INPUT_A));
+    const out = asrt.getClientExtensionResults().prf.results;
+    const first = out.first;
+    const len = first.byteLength;
+    const hex = toHex(first);
+
+    // Q4 (load-bearing): assertion returns 32 bytes.
+    record("Q4", len === 32, `first.byteLength=${len}`);
+    // Q10: a scoped assertion against a non-discoverable credential worked.
+    record("Q10", true, "scoped assert with allow-list of one succeeded");
+
+    // Q9: user-verification flag, bit 2 (0x04) of byte 32 of authenticatorData.
+    const authData = new Uint8Array(asrt.response.authenticatorData);
+    const uv = (authData[32] & 0x04) !== 0;
+    record("Q9", uv, `uv flag=${uv} (flags byte=0x${authData[32].toString(16).padStart(2,"0")}); confirm a real prompt appeared`);
+
+    // Q5 / Q12 / Q13: compare to baseline. First observation seeds the baseline.
+    const base = $("baseA").value.trim();
+    if (!base) {
+      $("baseA").value = hex;
+      saveState();
+      skip("Q5", "baseline seeded (" + hex + "), assert again to compare");
+      log("baseline A stored, run Assert input A again (reload / restart / after clearing site data)");
+    } else {
+      const same = base === hex;
+      record("Q5", same, same ? `identical across runs (${hex})` : `DIFFERS: baseline ${base} vs now ${hex}`);
+      // Q12 and Q13 are the same comparison under a restart / a site-data wipe.
+      log("Q12 (restart) and Q13 (clear site data) use this same comparison; set os/browser/provider notes accordingly");
+    }
+  } catch (e) { record("Q4", false, "assert error: " + e); }
+};
+
+// ---- Assert A and B: Q6 input dependence, Q8 two inputs in one assertion ----
+$("assertAB").onclick = async () => {
+  const idHex = $("credId").value.trim();
+  if (!idHex) { log("no cred id, create first", "fail"); return; }
+  try {
+    const asrt = await navigator.credentials.get(assertOptions(idHex, INPUT_A, INPUT_B));
+    const out = asrt.getClientExtensionResults().prf.results;
+    const haveBoth = !!(out.first && out.second);
+    const aHex = out.first ? toHex(out.first) : "(none)";
+    const bHex = out.second ? toHex(out.second) : "(none)";
+    record("Q8", haveBoth && aHex !== bHex, `both returned=${haveBoth}, differ=${aHex !== bHex}`);
+    record("Q6", haveBoth && aHex !== bHex, `A=${aHex} B=${bHex}`);
+  } catch (e) { record("Q8", false, "assert error: " + e); }
+};
+
+// ---- Q7: credential dependence ----
+$("q7").onclick = async () => {
+  const id1 = $("credId").value.trim();
+  if (!id1) { log("create the first credential first", "fail"); return; }
+  try {
+    const cred2 = await navigator.credentials.create(creationOptions(INPUT_A));
+    const id2 = toHex(cred2.rawId);
+    $("credId2").value = id2;
+    saveState();
+    const a1 = await navigator.credentials.get(assertOptions(id1, INPUT_A));
+    const a2 = await navigator.credentials.get(assertOptions(id2, INPUT_A));
+    const h1 = toHex(a1.getClientExtensionResults().prf.results.first);
+    const h2 = toHex(a2.getClientExtensionResults().prf.results.first);
+    record("Q7", h1 !== h2, `cred1=${h1} cred2=${h2}`);
+  } catch (e) { record("Q7", false, "error: " + e); }
+};
+
+// ---- Q11a: creation from a worker must fail (PublicKeyCredential not exposed there) ----
+$("q11a").onclick = async () => {
+  try {
+    const w = new Worker("worker.js");
+    const res = await new Promise((resolve) => {
+      w.onmessage = (ev) => resolve(ev.data);
+      w.postMessage({ type: "create", options: {
+        rpId: location.hostname, name: RP_NAME,
+        userId: [...USER_ID], userName: USER_NAME, userDisplay: USER_DISPLAY,
+        params: PUBKEY_PARAMS, first: INPUT_A,
+      }});
+    });
+    w.terminate();
+    // Pass means the worker could NOT create, confirming the constraint.
+    record("Q11a", res.created === false, res.detail);
+  } catch (e) { record("Q11a", false, "worker error: " + e); }
+};
+
+// ---- Q11b: derive a key from PRF bytes, hand it to a worker, confirm it survives ----
+$("q11b").onclick = async () => {
+  const idHex = $("credId").value.trim();
+  if (!idHex) { log("create/assert first for real bytes, using baseline if present", "info"); }
+  try {
+    // Prefer live bytes, fall back to the stored baseline hex.
+    let bytes;
+    if (idHex) {
+      const asrt = await navigator.credentials.get(assertOptions(idHex, INPUT_A));
+      bytes = new Uint8Array(asrt.getClientExtensionResults().prf.results.first);
+    } else if ($("baseA").value.trim()) {
+      bytes = fromHex($("baseA").value.trim());
+    } else {
+      record("Q11b", false, "no bytes available");
+      return;
+    }
+
+    // Import as a non-extractable HKDF key in the page.
+    const key = await crypto.subtle.importKey("raw", bytes, "HKDF", false, ["deriveBits"]);
+
+    // Exporting a non-extractable key must fail in the page.
+    let pageExportFailed = false;
+    try { await crypto.subtle.exportKey("raw", key); }
+    catch (e) { pageExportFailed = true; }
+
+    const w = new Worker("worker.js");
+    const res = await new Promise((resolve) => {
+      w.onmessage = (ev) => resolve(ev.data);
+      w.postMessage({ type: "deriveWithKey", key });
+    });
+    w.terminate();
+
+    const pass = res.transferred === true && res.derived === true &&
+                 res.workerExportFailed === true && pageExportFailed === true;
+    record("Q11b", pass,
+      `key survived transfer=${res.transferred}, worker derived=${res.derived}, ` +
+      `export failed (page=${pageExportFailed}, worker=${res.workerExportFailed}); ` +
+      `derived bits=${res.bitsHex || "(none)"}`);
+  } catch (e) { record("Q11b", false, "error: " + e); }
+};
+
+// ---- carried state mirror ----
+for (const id of ["credId","credId2","baseA","os","browser","provider","notes"]) {
+  $(id).addEventListener("change", saveState);
+}
+
+// ---- emit report ----
+$("emit").onclick = () => {
+  const report = {
+    os: $("os").value || "unknown",
+    browser: $("browser").value || "unknown",
+    provider: $("provider").value || "unknown",
+    leg: "js",
+    results: RESULTS,
+    reflect_fallbacks: [],
+    notes: $("notes").value || "",
+  };
+  $("out").value = JSON.stringify(report, null, 2);
+  log("report emitted, " + Object.keys(RESULTS).length + " questions recorded", "info");
+};
+
+$("reset").onclick = () => {
+  try {
+    localStorage.removeItem("prf_credId");
+    localStorage.removeItem("prf_credId2");
+    localStorage.removeItem("prf_baseA");
+  } catch (e) {}
+  for (const id of ["credId","credId2","baseA"]) $(id).value = "";
+  log("carried state cleared", "info");
+};
+</script>
+</body>
+</html>

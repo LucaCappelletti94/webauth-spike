@@ -1,0 +1,17 @@
+[package]
+name = "webauth-probe-windows"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+# Runs on Windows only. Uses WinRT through the `windows` crate.
+
+[dependencies.windows]
+version = "0.61"
+features = [
+    "Security_Credentials",
+    "Security_Credentials_UI",
+    "Security_Cryptography",
+    "Storage_Streams",
+    "Foundation",
+]

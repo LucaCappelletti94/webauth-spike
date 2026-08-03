@@ -1,0 +1,13 @@
+[package]
+name = "webauth-probe-android"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+android-keyring = "=0.2.0"
+keyring = "3"
+jni = "0.21"

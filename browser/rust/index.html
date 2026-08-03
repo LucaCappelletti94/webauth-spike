@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PRF probe (Rust / wasm leg)</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 1rem; max-width: 60rem; }
+  h1 { font-size: 1.2rem; }
+  fieldset { margin: 0.6rem 0; }
+  legend { font-weight: 600; }
+  button { margin: 0.15rem; padding: 0.35rem 0.6rem; }
+  input[type=text] { width: 100%; font-family: monospace; }
+  .row { padding: 0.2rem 0.4rem; border-bottom: 1px solid #ddd; font-family: monospace; font-size: 0.85rem; white-space: pre-wrap; }
+  .pass { color: #0a0; } .fail { color: #c00; } .info { color: #555; }
+  textarea { width: 100%; height: 14rem; font-family: monospace; font-size: 0.8rem; }
+  .grid { display: grid; grid-template-columns: 8rem 1fr; gap: 0.3rem; align-items: center; }
+</style>
+</head>
+<body>
+<h1>WebAuthn PRF probe: Rust / wasm leg</h1>
+<p class="info">Run the JavaScript leg first. A single failing Rust attempt cannot tell a platform limitation from a binding one. Serve over http://localhost or https, never file://.</p>
+<p class="info" id="status">loading wasm...</p>
+
+<fieldset>
+  <legend>Run metadata</legend>
+  <div class="grid">
+    <label for="os">os</label><input type="text" id="os" placeholder="Ubuntu 24.04">
+    <label for="browser">browser</label><input type="text" id="browser" placeholder="Chrome 141">
+    <label for="provider">provider</label><input type="text" id="provider" placeholder="which authenticator answered">
+    <label for="notes">notes</label><input type="text" id="notes" placeholder="anything that felt wrong">
+  </div>
+</fieldset>
+
+<fieldset>
+  <legend>Carried state</legend>
+  <div class="grid">
+    <label for="credId">cred id (hex)</label><input type="text" id="credId">
+    <label for="credId2">cred id 2 (hex)</label><input type="text" id="credId2">
+    <label for="baseA">baseline A (hex)</label><input type="text" id="baseA">
+  </div>
+</fieldset>
+
+<fieldset>
+  <legend>Core viability</legend>
+  <button id="q1">Q1 capabilities</button>
+  <button id="create">Create credential (Q2, Q3, Q10 setup)</button>
+  <button id="assertA">Assert input A (Q4, Q5, Q9, Q10, Q12, Q13)</button>
+</fieldset>
+
+<fieldset>
+  <legend>Properties</legend>
+  <button id="assertAB">Assert A and B (Q6, Q8)</button>
+  <button id="q7">Second credential (Q7)</button>
+</fieldset>
+
+<fieldset>
+  <legend>Topology (Q11, language-neutral page glue)</legend>
+  <button id="q11a">Create in worker (expect failure)</button>
+  <button id="q11b">Key handoff to worker</button>
+</fieldset>
+
+<fieldset>
+  <legend>Report</legend>
+  <button id="emit">Emit report JSON</button>
+  <button id="reset">Reset carried state</button>
+  <textarea id="out"></textarea>
+</fieldset>
+
+<div id="log"></div>
+
+<script type="module">
+import init, { capabilities, create_credential, assert } from "./pkg/webauth_probe_rust.js";
+
+const INPUT_A = "connetto-probe-salt-a";
+const INPUT_B = "connetto-probe-salt-b";
+const RP_ID = location.hostname;
+
+const rand = () => crypto.getRandomValues(new Uint8Array(32));
+const toHex = (buf) => [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,"0")).join("");
+const fromHex = (h) => new Uint8Array((h.trim().match(/.{1,2}/g) || []).map(x => parseInt(x,16)));
+
+const RESULTS = {};
+const FALLBACKS = new Set();
+const $ = (id) => document.getElementById(id);
+
+function log(msg, cls) {
+  const div = document.createElement("div");
+  div.className = "row " + (cls || "info");
+  div.textContent = msg;
+  $("log").prepend(div);
+}
+function record(q, pass, value) { RESULTS[q] = { pass, value: String(value) }; log(`${q}: ${pass?"PASS":"FAIL"}  ${value}`, pass?"pass":"fail"); }
+function skip(q, why) { RESULTS[q] = { pass: null, value: why }; log(`${q}: n/a  ${why}`, "info"); }
+function absorb(res) { if (res && res.fallbacks) for (const f of res.fallbacks) FALLBACKS.add(f); }
+
+function saveState() {
+  try {
+    localStorage.setItem("prf_rs_credId", $("credId").value);
+    localStorage.setItem("prf_rs_credId2", $("credId2").value);
+    localStorage.setItem("prf_rs_baseA", $("baseA").value);
+  } catch (e) {}
+}
+function loadState() {
+  try {
+    $("credId").value = localStorage.getItem("prf_rs_credId") || "";
+    $("credId2").value = localStorage.getItem("prf_rs_credId2") || "";
+    $("baseA").value = localStorage.getItem("prf_rs_baseA") || "";
+  } catch (e) {}
+}
+
+await init();
+$("status").textContent = "wasm ready";
+loadState();
+
+$("q1").onclick = async () => {
+  try {
+    const res = await capabilities();
+    absorb(res);
+    if (res.absent) { skip("Q1", "getClientCapabilities absent (expected below Chrome 133)"); return; }
+    record("Q1", res.prf === true, `extension:prf=${res.prf}`);
+  } catch (e) { record("Q1", false, "error: " + e); }
+};
+
+$("create").onclick = async () => {
+  try {
+    const res = await create_credential(RP_ID, INPUT_A, rand());
+    absorb(res);
+    $("credId").value = res.rawIdHex; saveState();
+    record("Q2", res.enabled === true, `prf.enabled=${res.enabled}`);
+    if (res.resultsAtCreationHex) record("Q3", true, `output at creation ${res.resultsAtCreationHex}`);
+    else record("Q3", false, "no output at creation (assertion required)");
+    log("created " + res.rawIdHex);
+  } catch (e) { record("Q2", false, "create error: " + e); }
+};
+
+$("assertA").onclick = async () => {
+  const idHex = $("credId").value.trim();
+  if (!idHex) { log("create first or paste a cred id", "fail"); return; }
+  try {
+    const res = await assert(RP_ID, fromHex(idHex), INPUT_A, undefined, rand());
+    absorb(res);
+    record("Q4", res.firstLen === 32, `first length=${res.firstLen}`);
+    record("Q10", true, "scoped assert with allow-list of one succeeded");
+    record("Q9", res.uv === true, `uv flag=${res.uv} (flags byte=0x${(res.flagsByte>>>0).toString(16).padStart(2,"0")})`);
+    const base = $("baseA").value.trim();
+    if (!base) { $("baseA").value = res.firstHex; saveState(); skip("Q5", "baseline seeded ("+res.firstHex+"), assert again to compare"); }
+    else { const same = base === res.firstHex; record("Q5", same, same ? `identical (${res.firstHex})` : `DIFFERS ${base} vs ${res.firstHex}`); }
+  } catch (e) { record("Q4", false, "assert error: " + e); }
+};
+
+$("assertAB").onclick = async () => {
+  const idHex = $("credId").value.trim();
+  if (!idHex) { log("create first", "fail"); return; }
+  try {
+    const res = await assert(RP_ID, fromHex(idHex), INPUT_A, INPUT_B, rand());
+    absorb(res);
+    const haveBoth = !!(res.firstHex && res.secondHex);
+    const differ = res.firstHex !== res.secondHex;
+    record("Q8", haveBoth && differ, `both=${haveBoth}, differ=${differ}`);
+    record("Q6", haveBoth && differ, `A=${res.firstHex} B=${res.secondHex}`);
+  } catch (e) { record("Q8", false, "error: " + e); }
+};
+
+$("q7").onclick = async () => {
+  const id1 = $("credId").value.trim();
+  if (!id1) { log("create the first credential first", "fail"); return; }
+  try {
+    const c2 = await create_credential(RP_ID, INPUT_A, rand()); absorb(c2);
+    $("credId2").value = c2.rawIdHex; saveState();
+    const a1 = await assert(RP_ID, fromHex(id1), INPUT_A, undefined, rand()); absorb(a1);
+    const a2 = await assert(RP_ID, fromHex(c2.rawIdHex), INPUT_A, undefined, rand()); absorb(a2);
+    record("Q7", a1.firstHex !== a2.firstHex, `cred1=${a1.firstHex} cred2=${a2.firstHex}`);
+  } catch (e) { record("Q7", false, "error: " + e); }
+};
+
+// Q11 topology is language-neutral, driven from page glue reusing the shared worker.
+$("q11a").onclick = async () => {
+  try {
+    const w = new Worker("../worker.js");
+    const res = await new Promise((resolve) => {
+      w.onmessage = (ev) => resolve(ev.data);
+      w.postMessage({ type: "create", options: {
+        rpId: RP_ID, name: "PRF probe",
+        userId: [...Array(16).keys()], userName: "probe@example.invalid", userDisplay: "Probe User",
+        params: [ {type:"public-key", alg:-7}, {type:"public-key", alg:-257} ], first: INPUT_A,
+      }});
+    });
+    w.terminate();
+    record("Q11a", res.created === false, res.detail);
+  } catch (e) { record("Q11a", false, "worker error: " + e); }
+};
+
+$("q11b").onclick = async () => {
+  const idHex = $("credId").value.trim();
+  try {
+    let bytes;
+    if (idHex) { const a = await assert(RP_ID, fromHex(idHex), INPUT_A, undefined, rand()); absorb(a); bytes = fromHex(a.firstHex); }
+    else if ($("baseA").value.trim()) bytes = fromHex($("baseA").value.trim());
+    else { record("Q11b", false, "no bytes available"); return; }
+    const key = await crypto.subtle.importKey("raw", bytes, "HKDF", false, ["deriveBits"]);
+    let pageExportFailed = false;
+    try { await crypto.subtle.exportKey("raw", key); } catch (e) { pageExportFailed = true; }
+    const w = new Worker("../worker.js");
+    const res = await new Promise((resolve) => { w.onmessage = (ev) => resolve(ev.data); w.postMessage({ type: "deriveWithKey", key }); });
+    w.terminate();
+    const pass = res.transferred && res.derived && res.workerExportFailed && pageExportFailed;
+    record("Q11b", pass, `survived=${res.transferred}, derived=${res.derived}, export failed (page=${pageExportFailed}, worker=${res.workerExportFailed}); bits=${res.bitsHex||"(none)"}`);
+  } catch (e) { record("Q11b", false, "error: " + e); }
+};
+
+for (const id of ["credId","credId2","baseA"]) $(id).addEventListener("change", saveState);
+
+$("emit").onclick = () => {
+  const report = {
+    os: $("os").value || "unknown", browser: $("browser").value || "unknown",
+    provider: $("provider").value || "unknown", leg: "rust",
+    results: RESULTS, reflect_fallbacks: [...FALLBACKS], notes: $("notes").value || "",
+  };
+  $("out").value = JSON.stringify(report, null, 2);
+  log("report emitted, " + Object.keys(RESULTS).length + " questions, " + FALLBACKS.size + " reflect fallbacks", "info");
+};
+
+$("reset").onclick = () => {
+  try { ["prf_rs_credId","prf_rs_credId2","prf_rs_baseA"].forEach(k => localStorage.removeItem(k)); } catch(e){}
+  for (const id of ["credId","credId2","baseA"]) $(id).value = "";
+  log("carried state cleared", "info");
+};
+</script>
+</body>
+</html>

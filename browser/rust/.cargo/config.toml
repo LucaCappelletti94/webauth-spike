@@ -1,0 +1,9 @@
+# Every part of the WebAuthn extension in web-sys 0.3.103 is behind this cfg.
+# Setting it here means `cargo check` and `wasm-pack build --target web` both work
+# without an inline RUSTFLAGS. An explicit RUSTFLAGS env var would override this,
+# so build from this directory without setting one.
+[build]
+rustflags = ["--cfg=web_sys_unstable_apis"]
+
+[unstable]
+# Kept commented: nothing here needs an unstable cargo feature.
