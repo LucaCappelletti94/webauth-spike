@@ -57,11 +57,16 @@ fn jstr(s: &str) -> String {
 fn print_signing_help() {
     println!();
     println!(
-        "The data protection keychain needs a code-signed binary with a keychain access group."
+        "apple-native-keyring-store forces the data protection keychain, which needs a keychain"
     );
-    println!("Build, ad-hoc sign against the entitlements, then run the signed binary directly:");
+    println!("access group. That is a restricted entitlement, so an ad-hoc signature is killed at launch.");
+    println!(
+        "It requires signing with a real Apple Development identity whose team prefixes the group,"
+    );
+    println!("for example TEAMID.connetto.probe in both the code and entitlements.plist:");
+    println!("  security find-identity -v -p codesigning   # find your identity and team id");
     println!("  cargo build --bin apple_keyring_probe");
-    println!("  codesign --force --sign - --entitlements entitlements.plist target/debug/apple_keyring_probe");
+    println!("  codesign --force --sign \"Apple Development: you (TEAMID)\" --entitlements entitlements.plist target/debug/apple_keyring_probe");
     println!("  ./target/debug/apple_keyring_probe");
 }
 

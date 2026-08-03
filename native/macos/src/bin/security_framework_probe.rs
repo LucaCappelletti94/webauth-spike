@@ -6,11 +6,11 @@
 //! N2: after the operator changes the enrolled fingerprint set, read again. biometry-any
 //! should still open, unlike biometry-current-set which invalidates on exactly that change.
 //!
-//! Access-control items live in the data protection keychain, which on macOS is only
-//! reachable from a code-signed binary carrying a keychain access group entitlement.
-//! `cargo run` produces an unsigned binary and fails with a missing-entitlement error, so
-//! build, ad-hoc sign against entitlements.plist, and run the signed binary directly. See
-//! the README. The access group here must match the keychain-access-groups entry.
+//! This stores into the ordinary login keychain, where kSecAttrAccessControl still applies
+//! the biometric access control list. That path needs no code signing, so plain
+//! `cargo run --bin security_framework_probe` works. The data protection keychain would gate
+//! the same way but requires a signed binary with a keychain access group, which is a
+//! restricted entitlement an ad-hoc signature cannot carry.
 //!
 //! Interactive: each read triggers a real prompt, so the binary pauses and records what
 //! the operator saw.
@@ -25,8 +25,6 @@ use security_framework::passwords::{
 const SERVICE: &str = "connetto-probe";
 const ACCOUNT: &str = "probe@example.invalid";
 const SECRET: &[u8] = b"connetto-probe-secret";
-// Must match the keychain-access-groups entry in entitlements.plist.
-const ACCESS_GROUP: &str = "connetto.probe";
 
 fn prompt(msg: &str) -> String {
     print!("{msg}");
@@ -66,28 +64,13 @@ fn store_protected() -> security_framework::base::Result<()> {
         | AccessControlOptions::OR;
     let mut opts = PasswordOptions::new_generic_password(SERVICE, ACCOUNT);
     opts.set_access_control_options(flags);
-    opts.use_protected_keychain();
-    opts.set_access_group(ACCESS_GROUP);
+    // Login keychain, not the data protection keychain: kSecAttrAccessControl still applies
+    // the biometric access control list here, and this needs no entitlement.
     set_generic_password_options(SECRET, opts)
 }
 
 fn read_protected() -> security_framework::base::Result<Vec<u8>> {
-    let mut opts = PasswordOptions::new_generic_password(SERVICE, ACCOUNT);
-    opts.use_protected_keychain();
-    opts.set_access_group(ACCESS_GROUP);
-    generic_password(opts)
-}
-
-fn print_signing_help() {
-    println!();
-    println!(
-        "The data protection keychain needs a code-signed binary with a keychain access group."
-    );
-    println!("Build, ad-hoc sign against the entitlements, then run the signed binary directly");
-    println!("(cargo run rebuilds and strips the signature):");
-    println!("  cargo build --bin security_framework_probe");
-    println!("  codesign --force --sign - --entitlements entitlements.plist target/debug/security_framework_probe");
-    println!("  ./target/debug/security_framework_probe");
+    generic_password(PasswordOptions::new_generic_password(SERVICE, ACCOUNT))
 }
 
 fn main() {
@@ -145,8 +128,7 @@ fn main() {
         }
         Err(e) => {
             println!("store failed: {e}");
-            print_signing_help();
-            println!("\nskipping N1 read and N2 because nothing was stored.");
+            println!("skipping N1 read and N2 because nothing was stored.");
         }
     }
 
@@ -155,13 +137,13 @@ fn main() {
     let n2_value = if n2_ran {
         "biometry-any survives fingerprint-set change"
     } else {
-        "skipped, store failed (see stdout for signing instructions)"
+        "skipped, store failed"
     };
 
     println!("\n== report JSON ==");
     println!("{{");
     println!("  \"os\": \"macOS (fill exact version)\",");
-    println!("  \"provider\": \"macOS Keychain, security-framework\",");
+    println!("  \"provider\": \"macOS login keychain, security-framework\",");
     println!("  \"leg\": \"native\",");
     println!("  \"results\": {{");
     println!(
