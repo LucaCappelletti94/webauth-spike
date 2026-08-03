@@ -133,7 +133,11 @@ function loadState() {
 }
 loadState();
 
-function creationOptions(prfFirst) {
+function creationOptions(prfFirst, attachment) {
+  const sel = { residentKey: "discouraged", userVerification: "required" };
+  // Q7 pins the platform authenticator so the second credential lands on the same
+  // provider rather than the browser offering a security key or a cross-device phone.
+  if (attachment) sel.authenticatorAttachment = attachment;
   return { publicKey: {
     challenge: rand(),
     rp:   { id: location.hostname, name: RP_NAME },
@@ -141,7 +145,7 @@ function creationOptions(prfFirst) {
     pubKeyCredParams: PUBKEY_PARAMS,
     // residentKey discouraged is load-bearing for Q10: the design stores
     // identifiers in the clear rather than relying on discoverable credentials.
-    authenticatorSelection: { residentKey: "discouraged", userVerification: "required" },
+    authenticatorSelection: sel,
     extensions: { prf: { eval: { first: enc(prfFirst) } } },
   }};
 }
@@ -249,7 +253,7 @@ $("q7").onclick = async () => {
   const id1 = $("credId").value.trim();
   if (!id1) { log("create the first credential first", "fail"); return; }
   try {
-    const cred2 = await navigator.credentials.create(creationOptions(INPUT_A));
+    const cred2 = await navigator.credentials.create(creationOptions(INPUT_A, "platform"));
     const id2 = toHex(cred2.rawId);
     $("credId2").value = id2;
     saveState();
