@@ -22,7 +22,7 @@ const SERVICE: &str = "connetto-probe";
 const ACCOUNT: &str = "probe@example.invalid";
 const SECRET: &[u8] = b"connetto-probe-secret";
 // Team-prefixed keychain access group. Must match entitlements.plist and the signing team.
-const ACCESS_GROUP: &str = "7W8527FJJE.connetto.probe";
+const ACCESS_GROUP: &str = "7W8527FJJE.com.connetto.probe";
 
 fn prompt(msg: &str) -> String {
     print!("{msg}");
