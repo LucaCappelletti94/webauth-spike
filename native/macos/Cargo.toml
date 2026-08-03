@@ -15,6 +15,10 @@ path = "src/bin/security_framework_probe.rs"
 name = "apple_keyring_probe"
 path = "src/bin/apple_keyring_probe.rs"
 
+[[bin]]
+name = "secure_enclave_probe"
+path = "src/bin/secure_enclave_probe.rs"
+
 [dependencies]
 security-framework = "=3.7.0"
 apple-native-keyring-store = { version = "=1.0.1", features = ["protected"] }
