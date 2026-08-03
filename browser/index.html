@@ -150,12 +150,29 @@ function creationOptions(prfFirst, attachment) {
   }};
 }
 
+function transportsFor(idHex) {
+  try { return (JSON.parse(localStorage.getItem("prf_transports") || "{}"))[idHex] || []; }
+  catch (e) { return []; }
+}
+function saveTransports(idHex, arr) {
+  try {
+    const m = JSON.parse(localStorage.getItem("prf_transports") || "{}");
+    m[idHex] = arr || [];
+    localStorage.setItem("prf_transports", JSON.stringify(m));
+  } catch (e) { /* ignore */ }
+}
+
 function assertOptions(rawIdHex, first, second) {
   const evalObj = second == null ? { first: enc(first) } : { first: enc(first), second: enc(second) };
+  // Tag the stored credential with the transports the authenticator reported at creation,
+  // so the browser targets that authenticator instead of offering USB or a cross-device QR.
+  const desc = { type: "public-key", id: fromHex(rawIdHex) };
+  const t = transportsFor(rawIdHex);
+  if (t.length) desc.transports = t;
   return { publicKey: {
     challenge: rand(),
     rpId: location.hostname,
-    allowCredentials: [ { type: "public-key", id: fromHex(rawIdHex) } ],
+    allowCredentials: [ desc ],
     userVerification: "required",
     extensions: { prf: { eval: evalObj } },
   }};
@@ -183,6 +200,7 @@ $("create").onclick = async () => {
     const idHex = toHex(cred.rawId);
     $("credId").value = idHex;
     saveState();
+    saveTransports(idHex, cred.response.getTransports ? cred.response.getTransports() : []);
     const ext = cred.getClientExtensionResults();
     const prf = ext && ext.prf;
     record("Q2", !!(prf && prf.enabled === true), `prf.enabled=${prf ? prf.enabled : "absent"}`);
@@ -257,6 +275,7 @@ $("q7").onclick = async () => {
     const id2 = toHex(cred2.rawId);
     $("credId2").value = id2;
     saveState();
+    saveTransports(id2, cred2.response.getTransports ? cred2.response.getTransports() : []);
     const a1 = await navigator.credentials.get(assertOptions(id1, INPUT_A));
     const a2 = await navigator.credentials.get(assertOptions(id2, INPUT_A));
     const h1 = toHex(a1.getClientExtensionResults().prf.results.first);
