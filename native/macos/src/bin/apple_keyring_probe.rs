@@ -21,8 +21,8 @@ use apple_native_keyring_store::protected::{AccessPolicy, Cred};
 const SERVICE: &str = "connetto-probe";
 const ACCOUNT: &str = "probe@example.invalid";
 const SECRET: &[u8] = b"connetto-probe-secret";
-// Must match the keychain-access-groups entry in entitlements.plist.
-const ACCESS_GROUP: &str = "connetto.probe";
+// Team-prefixed keychain access group. Must match entitlements.plist and the signing team.
+const ACCESS_GROUP: &str = "7W8527FJJE.connetto.probe";
 
 fn prompt(msg: &str) -> String {
     print!("{msg}");
