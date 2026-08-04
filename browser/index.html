@@ -134,15 +134,16 @@ function loadState() {
 }
 loadState();
 
-function creationOptions(prfFirst, attachment) {
+function creationOptions(prfFirst, attachment, user) {
   const sel = { residentKey: ($("residentReq") && $("residentReq").checked) ? "required" : "discouraged", userVerification: "required" };
   // Q7 pins the platform authenticator so the second credential lands on the same
   // provider rather than the browser offering a security key or a cross-device phone.
   if (attachment) sel.authenticatorAttachment = attachment;
+  const u = user || { id: USER_ID, name: USER_NAME, displayName: USER_DISPLAY };
   return { publicKey: {
     challenge: rand(),
     rp:   { id: location.hostname, name: RP_NAME },
-    user: { id: USER_ID, name: USER_NAME, displayName: USER_DISPLAY },
+    user: u,
     pubKeyCredParams: PUBKEY_PARAMS,
     // residentKey discouraged is load-bearing for Q10: the design stores
     // identifiers in the clear rather than relying on discoverable credentials.
@@ -274,7 +275,10 @@ $("q7").onclick = async () => {
   const id1 = $("credId").value.trim();
   if (!id1) { log("create the first credential first", "fail"); return; }
   try {
-    const cred2 = await navigator.credentials.create(creationOptions(INPUT_A, "platform"));
+    // Distinct user so the platform mints a genuinely separate passkey (same RP, different
+    // user) rather than deduping to the cross-device chooser. This tests credential dependence.
+    const user2 = { id: new Uint8Array([16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31]), name: "probe-b@example.invalid", displayName: "Probe User B" };
+    const cred2 = await navigator.credentials.create(creationOptions(INPUT_A, "platform", user2));
     const id2 = toHex(cred2.rawId);
     $("credId2").value = id2;
     saveState();
@@ -283,7 +287,7 @@ $("q7").onclick = async () => {
     const a2 = await navigator.credentials.get(assertOptions(id2, INPUT_A));
     const h1 = toHex(a1.getClientExtensionResults().prf.results.first);
     const h2 = toHex(a2.getClientExtensionResults().prf.results.first);
-    record("Q7", h1 !== h2, `cred1=${h1} cred2=${h2}`);
+    record("Q7", h1 !== h2, h1 !== h2 ? `credential-bound (differ): cred1=${h1} cred2=${h2}` : `ACCOUNT-SCOPED, credential dependence FAILS (identical): cred1=${h1} cred2=${h2}`);
   } catch (e) { record("Q7", false, "error: " + e); }
 };
 
