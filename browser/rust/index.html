@@ -46,6 +46,7 @@
   <button id="q1">Q1 capabilities</button>
   <button id="create">Create credential (Q2, Q3, Q10 setup)</button>
   <button id="assertA">Assert input A (Q4, Q5, Q9, Q10, Q12, Q13)</button>
+  <label style="display:block;margin-top:0.3rem"><input type="checkbox" id="residentReq"> resident key required (Android needs this for PRF)</label>
 </fieldset>
 
 <fieldset>
@@ -124,7 +125,7 @@ $("q1").onclick = async () => {
 
 $("create").onclick = async () => {
   try {
-    const res = await create_credential(RP_ID, INPUT_A, rand());
+    const res = await create_credential(RP_ID, INPUT_A, rand(), $("residentReq").checked);
     absorb(res);
     $("credId").value = res.rawIdHex; saveState();
     record("Q2", res.enabled === true, `prf.enabled=${res.enabled}`);
@@ -166,7 +167,7 @@ $("q7").onclick = async () => {
   const id1 = $("credId").value.trim();
   if (!id1) { log("create the first credential first", "fail"); return; }
   try {
-    const c2 = await create_credential(RP_ID, INPUT_A, rand()); absorb(c2);
+    const c2 = await create_credential(RP_ID, INPUT_A, rand(), $("residentReq").checked); absorb(c2);
     $("credId2").value = c2.rawIdHex; saveState();
     const a1 = await assert(RP_ID, fromHex(id1), INPUT_A, undefined, rand()); absorb(a1);
     const a2 = await assert(RP_ID, fromHex(c2.rawIdHex), INPUT_A, undefined, rand()); absorb(a2);

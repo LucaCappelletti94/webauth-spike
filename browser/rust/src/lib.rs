@@ -121,6 +121,7 @@ pub async fn create_credential(
     rp_id: &str,
     first: &str,
     challenge: &[u8],
+    resident_required: bool,
 ) -> Result<JsValue, JsValue> {
     let out = Object::new();
     let fallbacks = Array::new();
@@ -139,9 +140,9 @@ pub async fn create_credential(
         &user,
     );
     let selection = AuthenticatorSelectionCriteria::new();
-    // residentKey discouraged is load-bearing for Q10. set_resident_key is a plain
-    // string setter in 0.3.103, so the ResidentKeyRequirement enum is not needed.
-    selection.set_resident_key("discouraged");
+    // residentKey defaults to discouraged (Q10). On Android, PRF requires a discoverable
+    // resident passkey, so the caller can request required.
+    selection.set_resident_key(if resident_required { "required" } else { "discouraged" });
     selection.set_user_verification(UserVerificationRequirement::Required);
     opts.set_authenticator_selection(&selection);
     opts.set_extensions(&prf_inputs(first, None));

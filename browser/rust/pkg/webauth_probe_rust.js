@@ -42,16 +42,17 @@ export function capabilities() {
  * @param {string} rp_id
  * @param {string} first
  * @param {Uint8Array} challenge
+ * @param {boolean} resident_required
  * @returns {Promise<any>}
  */
-export function create_credential(rp_id, first, challenge) {
+export function create_credential(rp_id, first, challenge, resident_required) {
     const ptr0 = passStringToWasm0(rp_id, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len0 = WASM_VECTOR_LEN;
     const ptr1 = passStringToWasm0(first, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
     const len1 = WASM_VECTOR_LEN;
     const ptr2 = passArray8ToWasm0(challenge, wasm.__wbindgen_malloc);
     const len2 = WASM_VECTOR_LEN;
-    const ret = wasm.create_credential(ptr0, len0, ptr1, len1, ptr2, len2);
+    const ret = wasm.create_credential(ptr0, len0, ptr1, len1, ptr2, len2, resident_required);
     return ret;
 }
 function __wbg_get_imports() {
