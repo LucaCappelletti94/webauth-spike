@@ -552,5 +552,67 @@
     },
     "reflect_fallbacks": [],
     "notes": "A4 remains on the to-do list. It was not run because the only emulator on hand (google_apis API 35, Android 15) differs from the phone (Android 13) and lacks a Google account and lock screen, so it cannot mint the discoverable Google passkey that produced PRF on the device. Per the spec, until a matching emulator is compared, the physical device is the source of truth for Android."
+  },
+  {
+    "os": "iOS 26",
+    "browser": "Safari (iOS 26)",
+    "provider": "iCloud Keychain",
+    "leg": "js",
+    "results": {
+      "Q1": {
+        "pass": true,
+        "value": "extension:prf=true. Note: iOS Safari advertised prf, whereas macOS Safari reported undefined for the same method, another Safari getClientCapabilities inconsistency"
+      },
+      "Q2": {
+        "pass": true,
+        "value": "prf.enabled=true"
+      },
+      "Q3": {
+        "pass": true,
+        "value": "output at creation, 32 bytes, 712f0c24c783da60fafc6694f7454e62b45ede3a52d33c4dd00655d352e05ea5"
+      },
+      "Q4": {
+        "pass": true,
+        "value": "first.byteLength=32"
+      },
+      "Q5": {
+        "pass": true,
+        "value": "identical across runs, 712f0c24c783da60fafc6694f7454e62b45ede3a52d33c4dd00655d352e05ea5"
+      },
+      "Q6": {
+        "pass": true,
+        "value": "A=712f0c24...507067a... (712f0c24c783da60fafc6694f7454e62b45ede3a52d33c4dd00655d352e05ea5) B=5d69d5b4127c0365b2918139c12e4253ac69011a980647b7ec0bede4cf34c1f4, differ"
+      },
+      "Q7": {
+        "pass": true,
+        "value": "credential-bound. Two distinct credentials on the same device and account (different user id, same RP) gave different PRF for input A: cred1=712f0c24c783da60fafc6694f7454e62b45ede3a52d33c4dd00655d352e05ea5 cred2=399d7bee0cbd126ddd71e1903bf72857120c01925820c9cdc4869e6d38578ae0"
+      },
+      "Q8": {
+        "pass": true,
+        "value": "both returned in one assertion and differ"
+      },
+      "Q9": {
+        "pass": true,
+        "value": "user verification flag set (Face ID), flags byte 0x1d"
+      },
+      "Q10": {
+        "pass": true,
+        "value": "scoped assertion with an allow-list of one succeeded"
+      },
+      "Q11a": {
+        "pass": true,
+        "value": "PublicKeyCredential undefined in a worker, constraint confirmed"
+      },
+      "Q11b": {
+        "pass": true,
+        "value": "topology viable: HKDF key survived transfer to a worker, worker derived, export failed in both. Derived bits 6a9b02ed48a9e2b344afd51a7d55fd2bdd1a49e12bf66863555f00f6b8600640, identical to the macOS run, consistent with the same PRF input bytes"
+      },
+      "Q7b": {
+        "pass": null,
+        "value": "CONFIRMED RP-independent on a single device (no sync confound). Two passkeys at rp.id=pippo.tail0b5119.ts.net and rp.id=tail0b5119.ts.net with the same user id produced the identical PRF output 712f0c24c783da60fafc6694f7454e62b45ede3a52d33c4dd00655d352e05ea5"
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "I1: iCloud Keychain supports PRF on the iPhone via Face ID, stable 32 bytes. CONFIRMED Apple PRF derivation model: the PRF is a function of (iCloud account, user id, input), independent of rp.id and of the specific credential instance. Evidence, all on one device and account: different user id gives different output (Q7: 712f0c24 vs 399d7bee), while different rp.id with the same user id gives the identical output (Q7b: pippo.tail0b5119.ts.net and tail0b5119.ts.net both 712f0c24). Credential dependence in the spec's sense holds (different credential via different user id differs), but RP does not isolate keys. Contrast Google Password Manager, which is per-credential-instance (two same-user same-RP passkeys differ, 1eee0139 vs 4a07cb40). Design consequence: on Apple a fixed user id yields one shared key across every site for that Apple account, so keys must be diversified by user id or input salt, never assumed unique per site or per credential. This is an iCloud Keychain behavior, so it applies to macOS Safari too (the cross-device macOS-localhost equals iPhone-ts.net match is consistent)."
   }
 ]
