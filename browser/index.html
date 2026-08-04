@@ -50,6 +50,7 @@
   <button id="q1">Q1 capabilities</button>
   <button id="create">Create credential (Q2, Q3, Q10 setup)</button>
   <button id="assertA">Assert input A (Q4, Q5, Q9, Q10, Q12, Q13)</button>
+  <label style="display:block;margin-top:0.3rem"><input type="checkbox" id="residentReq"> resident key required (Android needs this for PRF)</label>
 </fieldset>
 
 <fieldset>
@@ -134,7 +135,7 @@ function loadState() {
 loadState();
 
 function creationOptions(prfFirst, attachment) {
-  const sel = { residentKey: "discouraged", userVerification: "required" };
+  const sel = { residentKey: ($("residentReq") && $("residentReq").checked) ? "required" : "discouraged", userVerification: "required" };
   // Q7 pins the platform authenticator so the second credential lands on the same
   // provider rather than the browser offering a security key or a cross-device phone.
   if (attachment) sel.authenticatorAttachment = attachment;
