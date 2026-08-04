@@ -164,10 +164,14 @@ function saveTransports(idHex, arr) {
 
 function assertOptions(rawIdHex, first, second) {
   const evalObj = second == null ? { first: enc(first) } : { first: enc(first), second: enc(second) };
-  // Tag the stored credential with the transports the authenticator reported at creation,
-  // so the browser targets that authenticator instead of offering USB or a cross-device QR.
+  // Keep authentication on-device. If the credential is reachable over the internal
+  // (platform) transport, pin to it so the browser does not steer a cold-start assertion
+  // to a cross-device phone or QR, which would lock out a user who has no second device.
+  // Non-platform credentials (a security key over usb, or a phone-only hybrid credential)
+  // keep their reported transports.
   const desc = { type: "public-key", id: fromHex(rawIdHex) };
-  const t = transportsFor(rawIdHex);
+  let t = transportsFor(rawIdHex);
+  if (t.includes("internal")) t = ["internal"];
   if (t.length) desc.transports = t;
   return { publicKey: {
     challenge: rand(),
