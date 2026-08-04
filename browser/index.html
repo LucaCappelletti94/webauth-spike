@@ -164,11 +164,13 @@ function saveTransports(idHex, arr) {
 
 function assertOptions(rawIdHex, first, second) {
   const evalObj = second == null ? { first: enc(first) } : { first: enc(first), second: enc(second) };
-  // Diagnostic and design choice: force the on-device transport so the browser must use the
-  // local passkey instead of offering a cross-device phone or QR. If this still shows a QR,
-  // the local authenticator has no usable copy of the credential, which is a deeper finding
-  // than transport advertisement.
-  const desc = { type: "public-key", id: fromHex(rawIdHex), transports: ["internal"] };
+  // Advertise the credential's reported transports. Note: on macOS after a browser restart
+  // these platform passkeys were sometimes offered only cross-device (QR), and forcing the
+  // internal transport then produced NotAllowedError (no local copy on offer). That cross-device
+  // fallback is a real authentication failure mode for a user without a second device.
+  const desc = { type: "public-key", id: fromHex(rawIdHex) };
+  const t = transportsFor(rawIdHex);
+  if (t.length) desc.transports = t;
   return { publicKey: {
     challenge: rand(),
     rpId: location.hostname,
