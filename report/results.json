@@ -538,5 +538,19 @@
     },
     "reflect_fallbacks": [],
     "notes": "A6 gates as expected, the Android counterpart of macOS N3, so Android needs no upstream work on the flag itself and is ahead of Apple where the equivalent flag is absent from keyring. Important sub-finding: the stock android-keyring 0.2.0 default credential path hardcodes set_user_authentication_required to false, so a plain keyring::Entry is NOT gated. Getting a gate means building the key yourself with the flag set (what this probe does). A full prompt-driven read past the refusal is the app's BiometricPrompt plus CryptoObject job, out of scope here. Provenance: android-keyring is a single-author dependency. Built by hand with NDK 28 (no Gradle) and run on the SM-M526BR. This closes the Dioxus-app question: since a WebView has no WebAuthn (A5), the native Keystore gate (A6) is the viable route, and it works."
+  },
+  {
+    "os": "Android emulator (collection-test, API 35 / Android 15)",
+    "browser": "Chrome",
+    "provider": "none available for the PRF path",
+    "leg": "js",
+    "results": {
+      "A4": {
+        "pass": null,
+        "value": "deferred, not carried out (not a negative result). The available emulator cannot reproduce the device's PRF-positive configuration: it is Android 15 not 13, has no signed-in Google account (so no Google Password Manager discoverable passkey, the path that carries PRF on the phone), and no lock screen. To run A4 properly, an emulator matching the device's OS with a signed-in Google account and a lock screen is needed"
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "A4 remains on the to-do list. It was not run because the only emulator on hand (google_apis API 35, Android 15) differs from the phone (Android 13) and lacks a Google account and lock screen, so it cannot mint the discoverable Google passkey that produced PRF on the device. Per the spec, until a matching emulator is compared, the physical device is the source of truth for Android."
   }
 ]
