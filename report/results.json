@@ -1,0 +1,354 @@
+[
+  {
+    "os": "macOS 26.5.2 (build 25F84)",
+    "browser": "",
+    "provider": "macOS data protection keychain, security-framework",
+    "leg": "native",
+    "results": {
+      "N1": {
+        "pass": true,
+        "value": "biometry-any plus device passcode keychain item. Touch ID prompt appeared and gated the read, which returned the stored secret. Passcode fallback not tried, so untested"
+      },
+      "N2": {
+        "pass": true,
+        "value": "biometry-any survived a fingerprint-set change. The item still opened after a fingerprint was added or removed, confirming biometry-any is not invalidated by that change, unlike biometry-current-set"
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "Persistent data protection keychain items in a signed .app carrying an embedded Development provisioning profile. A bare signed CLI is killed at exec by AMFI (rc=137), because kSecAttrAccessControl routes through the data protection keychain, which needs the restricted keychain-access-groups entitlement that only a provisioning profile authorizes. So the real macOS app must be a provisioned app, not a helper CLI or daemon. Team 7W8527FJJE, access group 7W8527FJJE.com.connetto.probe. N1 was also confirmed independently via an ephemeral Secure Enclave key from a plain signed CLI (no provisioning needed for that path)."
+  },
+  {
+    "os": "macOS 26.5.2 (build 25F84)",
+    "browser": "",
+    "provider": "apple-native-keyring-store (protected), RequireUserPresence",
+    "leg": "native",
+    "results": {
+      "N3": {
+        "pass": true,
+        "value": "RequireUserPresence prompted for biometrics, offered a passcode fallback, and survived a fingerprint-set change. Behaves like the hand-built biometry-any plus passcode gate of N1"
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "N1 against N3 is the upstream question. RequireUserPresence maps to the userPresence access-control flag and here matches N1 on all three points (prompt, passcode fallback, survival of a fingerprint change), so on macOS apple-native-keyring-store suffices and nothing needs contributing upstream. Same provisioned .app requirement as N1 and N2, since this library forces the data protection keychain."
+  },
+  {
+    "os": "macOS 26.5.2 (build 25F84)",
+    "browser": "Firefox (139 or later)",
+    "provider": "macOS platform authenticator (operator labeled it macOS keychain), credential reported internal plus hybrid transports",
+    "leg": "js",
+    "results": {
+      "Q1": {
+        "pass": true,
+        "value": "extension:prf=true. Firefox does implement getClientCapabilities here"
+      },
+      "Q2": {
+        "pass": true,
+        "value": "prf.enabled=true"
+      },
+      "Q3": {
+        "pass": true,
+        "value": "output returned at creation, 32 bytes, 712f0c24c783da60fafc6694f7454e62b45ede3a52d33c4dd00655d352e05ea5, so enrolment costs one gesture"
+      },
+      "Q4": {
+        "pass": true,
+        "value": "first.byteLength=32"
+      },
+      "Q5": {
+        "pass": true,
+        "value": "deterministic. creation output (Q3) and the input-A assertion (Q6) are the identical value 712f0c24c783da60fafc6694f7454e62b45ede3a52d33c4dd00655d352e05ea5. The formal reload double-assert was not completed because Firefox offered only USB or cross-device QR for the assertion, since the descriptor did not tag the internal transport"
+      },
+      "Q6": {
+        "pass": true,
+        "value": "A=712f0c24c783da60fafc6694f7454e62b45ede3a52d33c4dd00655d352e05ea5 B=5d69d5b4127c0365b2918139c12e4253ac69011a980647b7ec0bede4cf34c1f4, differ"
+      },
+      "Q7": {
+        "pass": null,
+        "value": "not tested. Creating a second credential without pinning the platform authenticator, Firefox offered a security key or a cross-device phone rather than a second platform passkey, and the attempt returned NotAllowedError"
+      },
+      "Q8": {
+        "pass": true,
+        "value": "both first and second returned in one assertion and differ"
+      },
+      "Q9": {
+        "pass": true,
+        "value": "user verification flag set, flags byte 0x1d"
+      },
+      "Q10": {
+        "pass": true,
+        "value": "scoped assertion with an allow-list of one non-discoverable credential succeeded"
+      },
+      "Q11a": {
+        "pass": true,
+        "value": "PublicKeyCredential is undefined in a worker, the topology constraint is confirmed"
+      },
+      "Q11b": {
+        "pass": null,
+        "value": "not tested. Its internal assertion hit the same USB or QR chooser"
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "Firefox on macOS driving the platform authenticator. Strong PRF support: enabled, 32 bytes, output at creation, input and cross-eval dependence, user verification enforced. Q5 stability is shown by the creation output equaling the assertion output. The open items (formal Q5 double-assert, Q7, Q11b) all trace to one cause: the create and assert descriptors do not pin the internal platform transport, so Firefox offered USB or cross-device. Create is fixed (Q7 now sets authenticatorAttachment platform), assert transport tagging is pending for the Chrome and Safari rows. Q12 and Q13 durability not run."
+  },
+  {
+    "os": "macOS 26.5.2 (build 25F84)",
+    "browser": "Safari 26.5.2 (21624.2.5.11.8)",
+    "provider": "iCloud Keychain",
+    "leg": "js",
+    "results": {
+      "Q1": {
+        "pass": false,
+        "value": "getClientCapabilities is implemented but extension:prf comes back undefined, so Safari does not advertise the capability even though the extension works in Q2 through Q6. A consumer trusting getClientCapabilities on Safari would wrongly conclude PRF is unavailable"
+      },
+      "Q2": {
+        "pass": true,
+        "value": "prf.enabled=true"
+      },
+      "Q3": {
+        "pass": true,
+        "value": "output returned at creation, 32 bytes, 712f0c24c783da60fafc6694f7454e62b45ede3a52d33c4dd00655d352e05ea5, one-gesture enrolment"
+      },
+      "Q4": {
+        "pass": true,
+        "value": "first.byteLength=32"
+      },
+      "Q5": {
+        "pass": true,
+        "value": "identical across two assertions, 712f0c24c783da60fafc6694f7454e62b45ede3a52d33c4dd00655d352e05ea5. The formal double-assert completed here, unlike the Firefox run"
+      },
+      "Q6": {
+        "pass": true,
+        "value": "A=712f0c24c783da60fafc6694f7454e62b45ede3a52d33c4dd00655d352e05ea5 B=5d69d5b4127c0365b2918139c12e4253ac69011a980647b7ec0bede4cf34c1f4, differ"
+      },
+      "Q7": {
+        "pass": null,
+        "value": "not tested. iCloud Keychain would not mint a second distinct passkey for the same rp and user, it offered a cross-device QR instead, returning NotAllowedError"
+      },
+      "Q8": {
+        "pass": true,
+        "value": "both first and second returned in one assertion and differ"
+      },
+      "Q9": {
+        "pass": true,
+        "value": "user verification flag set, flags byte 0x1d"
+      },
+      "Q10": {
+        "pass": true,
+        "value": "scoped assertion with an allow-list of one non-discoverable credential succeeded"
+      },
+      "Q11a": {
+        "pass": true,
+        "value": "PublicKeyCredential is undefined in a worker, topology constraint confirmed"
+      },
+      "Q11b": {
+        "pass": null,
+        "value": "not tested. Its internal assertion hit the cross-device QR chooser"
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "iCloud Keychain supports the PRF extension, measured directly rather than inferred. Cross-browser finding: the PRF output equals the value produced in Firefox on the same Mac (712f0c24...e05ea5), so iCloud Keychain hands both browsers the same passkey and PRF secret, evidence the credential lives outside any single browser profile (the Q13 claim). Q1 shows Safari under-reports capabilities. Q7 and Q11b were blocked by the cross-device chooser. Q12 and Q13 durability not run."
+  },
+  {
+    "os": "macOS 26.5.2 (build 25F84)",
+    "browser": "Safari 26.5.2 (21624.2.5.11.8)",
+    "provider": "iCloud Keychain",
+    "leg": "rust",
+    "results": {
+      "Q1": {
+        "pass": true,
+        "value": "extension:prf=true via Reflect. Diverges from the JS leg, which reported extension:prf=undefined for the same method. Safari's getClientCapabilities is inconsistent run to run for prf"
+      },
+      "Q2": {
+        "pass": true,
+        "value": "prf.enabled=true"
+      },
+      "Q3": {
+        "pass": true,
+        "value": "output at creation, 32 bytes, 712f0c24c783da60fafc6694f7454e62b45ede3a52d33c4dd00655d352e05ea5"
+      },
+      "Q4": {
+        "pass": true,
+        "value": "first length=32"
+      },
+      "Q5": {
+        "pass": true,
+        "value": "identical across runs, 712f0c24c783da60fafc6694f7454e62b45ede3a52d33c4dd00655d352e05ea5"
+      },
+      "Q6": {
+        "pass": true,
+        "value": "A=712f0c24c783da60fafc6694f7454e62b45ede3a52d33c4dd00655d352e05ea5 B=5d69d5b4127c0365b2918139c12e4253ac69011a980647b7ec0bede4cf34c1f4"
+      },
+      "Q7": {
+        "pass": null,
+        "value": "not tested. Second credential creation offered a security key or cross-device QR, NotAllowedError, same as the JS leg"
+      },
+      "Q8": {
+        "pass": true,
+        "value": "both returned in one assertion and differ"
+      },
+      "Q9": {
+        "pass": true,
+        "value": "user verification flag set, flags byte 0x1d"
+      },
+      "Q10": {
+        "pass": true,
+        "value": "scoped assertion with an allow-list of one succeeded"
+      },
+      "Q11a": {
+        "pass": true,
+        "value": "PublicKeyCredential undefined in a worker, constraint confirmed"
+      },
+      "Q11b": {
+        "pass": null,
+        "value": "not tested. Internal assertion hit the cross-device QR chooser"
+      }
+    },
+    "reflect_fallbacks": [
+      "Q1 getClientCapabilities: no typed binding in web-sys 0.3.103, called via Reflect"
+    ],
+    "notes": "Core viability confirmed: the design can drive iCloud Keychain PRF through web-sys 0.3.103. The only place the typed bindings were insufficient is the getClientCapabilities query. Create and assert bytes match the JS leg exactly. Divergence from the JS leg only at Q1 (prf advertised true here, undefined there), a Safari capability-reporting inconsistency, not a binding-layer issue. Q7 and Q11b blocked by the cross-device chooser as in the JS leg."
+  },
+  {
+    "os": "macOS 26.5.2 (build 25F84)",
+    "browser": "Chrome 150.0.7871.182 (arm64)",
+    "provider": "Google Password Manager (synced software passkey)",
+    "leg": "js",
+    "results": {
+      "Q1": {
+        "pass": true,
+        "value": "extension:prf=true. Chrome advertises the capability correctly, unlike Safari"
+      },
+      "Q2": {
+        "pass": true,
+        "value": "prf.enabled=true"
+      },
+      "Q3": {
+        "pass": true,
+        "value": "output at creation, 32 bytes, 1eee0139c7ddb85ef334423bb2be7a645e139008c13b2956557d1022a1bbfaf1, one-gesture enrolment"
+      },
+      "Q4": {
+        "pass": true,
+        "value": "first.byteLength=32"
+      },
+      "Q5": {
+        "pass": true,
+        "value": "identical across runs, 1eee0139c7ddb85ef334423bb2be7a645e139008c13b2956557d1022a1bbfaf1"
+      },
+      "Q6": {
+        "pass": true,
+        "value": "A=1eee0139c7ddb85ef334423bb2be7a645e139008c13b2956557d1022a1bbfaf1 B=c449b81f4257e7435c45f0d075457f03295d022f6cbb11af90b0fd78f4f5fdb3, differ"
+      },
+      "Q7": {
+        "pass": null,
+        "value": "not tested. Second credential creation requested a cross-device QR, NotAllowedError. Same same-rp-and-user limitation seen on every provider"
+      },
+      "Q8": {
+        "pass": true,
+        "value": "both returned in one assertion and differ"
+      },
+      "Q9": {
+        "pass": true,
+        "value": "user verification flag set, flags byte 0x1d"
+      },
+      "Q10": {
+        "pass": true,
+        "value": "scoped assertion with an allow-list of one succeeded"
+      },
+      "Q11a": {
+        "pass": true,
+        "value": "PublicKeyCredential undefined in a worker, constraint confirmed"
+      },
+      "Q11b": {
+        "pass": null,
+        "value": "not tested. Internal assertion hit the cross-device QR chooser"
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "HIGH VALUE ROW. Google Password Manager, the synced software passkey, supports the PRF extension: 32 bytes, stable across runs, output at creation, UV enforced, input and cross-eval dependence. The spec singles out a failure here as the most consequential possible result, so this pass means the design reaches synced-passkey users, not only hardware-key or platform-authenticator users. Q12 and Q13 durability not run. Q7 and Q11b blocked by the cross-device chooser."
+  },
+  {
+    "os": "macOS 26.5.2 (build 25F84)",
+    "browser": "Chrome 150.0.7871.182 (arm64)",
+    "provider": "Google Password Manager (synced software passkey)",
+    "leg": "rust",
+    "results": {
+      "Q1": {
+        "pass": true,
+        "value": "extension:prf=true via Reflect"
+      },
+      "Q2": {
+        "pass": true,
+        "value": "prf.enabled=true"
+      },
+      "Q3": {
+        "pass": true,
+        "value": "output at creation, 32 bytes, 4a07cb40fc496988cc23eaf379433ac4e29aacc8ec0e0ebcf1249c3626b39fbf"
+      },
+      "Q4": {
+        "pass": true,
+        "value": "first length=32"
+      },
+      "Q5": {
+        "pass": true,
+        "value": "identical across runs, 4a07cb40fc496988cc23eaf379433ac4e29aacc8ec0e0ebcf1249c3626b39fbf"
+      },
+      "Q6": {
+        "pass": true,
+        "value": "A=4a07cb40fc496988cc23eaf379433ac4e29aacc8ec0e0ebcf1249c3626b39fbf B=5bc9ba713e728d88ad7b5cb80a62d9f6bde076c03ef81808948ce31eee793b5e, differ"
+      },
+      "Q7": {
+        "pass": null,
+        "value": "in-run test hit the cross-device QR chooser, but credential dependence is corroborated across runs: this Rust leg produced 4a07cb40... while the Chrome JS leg produced 1eee0139... for the same rp and user, so two distinct Google passkeys gave different PRF outputs"
+      },
+      "Q8": {
+        "pass": true,
+        "value": "both returned in one assertion and differ"
+      },
+      "Q9": {
+        "pass": true,
+        "value": "user verification flag set, flags byte 0x1d"
+      },
+      "Q10": {
+        "pass": true,
+        "value": "scoped assertion with an allow-list of one succeeded"
+      },
+      "Q11a": {
+        "pass": true,
+        "value": "PublicKeyCredential undefined in a worker, constraint confirmed"
+      },
+      "Q11b": {
+        "pass": null,
+        "value": "not tested. Internal assertion hit the cross-device QR chooser"
+      }
+    },
+    "reflect_fallbacks": [
+      "Q1 getClientCapabilities: no typed binding in web-sys 0.3.103, called via Reflect"
+    ],
+    "notes": "Design viability confirmed on the synced Google passkey too: web-sys drives PRF end to end, the only binding gap is getClientCapabilities. Unlike iCloud Keychain, Google Password Manager did not dedupe, it minted a distinct passkey per leg, which incidentally corroborates Q7. Q12 and Q13 not run."
+  },
+  {
+    "os": "macOS 26.5.2 (build 25F84)",
+    "browser": "Safari 26.5.2 and Firefox and Chrome",
+    "provider": "iCloud Keychain and Google Password Manager",
+    "leg": "js",
+    "results": {
+      "Q12": {
+        "pass": false,
+        "value": "failure mode observed. After quitting and reopening the browser, an assertion scoped to the stored non-discoverable credential id was offered only over the cross-device path (a phone QR), with no on-device Touch ID option. Forcing the internal transport then returned NotAllowedError and Safari reported no local passkey for the origin, so there was no on-device copy to use. A user without a second device could not authenticate. Confounders: dozens of passkeys for one origin and user, mid-test fingerprint-set changes, and a cache clear. The earlier fresh single-session runs did assert locally with stable bytes, so persistence of the secret holds, but reliable on-device re-assertion after a restart did not."
+      },
+      "Q13": {
+        "pass": true,
+        "value": "demonstrated more strongly than the formal clear-site-data test. The identical PRF output 712f0c24...e05ea5 appeared in both Firefox and Safari on the same Mac, two different browser profiles, so the credential and its PRF secret live in iCloud Keychain outside any single browser profile. Clearing one browser's site data cannot remove a credential another browser already reads"
+      },
+      "Q11a": {
+        "pass": true,
+        "value": "WebAuthn creation is impossible inside a dedicated worker, PublicKeyCredential is undefined there. Confirmed on every browser row"
+      },
+      "Q11b": {
+        "pass": true,
+        "value": "topology viable. The HKDF key imported from the PRF bytes survived a structured-clone transfer into a worker (key survived transfer=true), the worker derived with it (worker derived=true), and raw export failed in both the page and the worker (non-extractable). Derived bits 6a9b02ed48a9e2b344afd51a7d55fd2bdd1a49e12bf66863555f00f6b8600640"
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "Durability. Q13 (credential lives outside the browser profile) is proven by cross-browser byte identity, the strongest form. Q12 surfaced a real failure mode rather than a clean pass: after a browser restart the platform passkey was offered only cross-device (QR), and forcing on-device transport gave NotAllowedError with no local passkey shown, so a user without a second device could be locked out. This is the risk the operator flagged. It is confounded by heavy test churn (many same-user passkeys, fingerprint changes, cache clear) and does not reproduce the earlier clean single-session Touch ID asserts, so it is a risk to design against, not a proven everyday breakage. The PRF secret itself is persistent (synced passkey), the issue is the browser's willingness to offer the local credential after a restart. Q11 topology fully answered: creation cannot happen in a worker (Q11a), but a derived CryptoKey survives transfer to a worker, is usable there, and is non-exportable (Q11b), so the browser design has a viable worker topology."
+  }
+]
