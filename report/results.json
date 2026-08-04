@@ -350,5 +350,193 @@
     },
     "reflect_fallbacks": [],
     "notes": "Durability. Q13 (credential lives outside the browser profile) is proven by cross-browser byte identity, the strongest form. Q12 surfaced a real failure mode rather than a clean pass: after a browser restart the platform passkey was offered only cross-device (QR), and forcing on-device transport gave NotAllowedError with no local passkey shown, so a user without a second device could be locked out. This is the risk the operator flagged. It is confounded by heavy test churn (many same-user passkeys, fingerprint changes, cache clear) and does not reproduce the earlier clean single-session Touch ID asserts, so it is a risk to design against, not a proven everyday breakage. The PRF secret itself is persistent (synced passkey), the issue is the browser's willingness to offer the local credential after a restart. Q11 topology fully answered: creation cannot happen in a worker (Q11a), but a derived CryptoKey survives transfer to a worker, is usable there, and is non-exportable (Q11b), so the browser design has a viable worker topology."
+  },
+  {
+    "os": "Android 13",
+    "browser": "Chrome 150",
+    "provider": "device-bound platform authenticator (chose 'This device', non-discoverable, residentKey discouraged)",
+    "leg": "js",
+    "results": {
+      "Q1": {
+        "pass": true,
+        "value": "extension:prf=true. getClientCapabilities advertises the capability"
+      },
+      "Q2": {
+        "pass": false,
+        "value": "prf.enabled=absent. The created credential did NOT enable PRF"
+      },
+      "Q3": {
+        "pass": false,
+        "value": "no prf.results at creation"
+      },
+      "Q4": {
+        "pass": false,
+        "value": "assertion returned no prf results at all (getClientExtensionResults().prf was undefined), so no 32 bytes"
+      },
+      "Q8": {
+        "pass": false,
+        "value": "assertion returned no prf results"
+      },
+      "Q7": {
+        "pass": false,
+        "value": "assertion returned no prf results"
+      },
+      "Q11a": {
+        "pass": true,
+        "value": "PublicKeyCredential undefined in a worker, constraint confirmed"
+      },
+      "Q11b": {
+        "pass": false,
+        "value": "no prf bytes to hand off"
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "NEGATIVE, and important. With a non-discoverable credential the Android create sheet offered only NFC token, USB token, Another device, and This device. This device creates a device-bound platform credential that does not support PRF, even though getClientCapabilities claims extension:prf=true. This is exactly the study's premise: the browser advertises a capability the authenticator does not deliver. The design's non-discoverable-credential plan (Q10) gets no PRF on Android."
+  },
+  {
+    "os": "Android 13",
+    "browser": "Chrome 150",
+    "provider": "Google Password Manager, discoverable resident passkey (residentKey required)",
+    "leg": "js",
+    "results": {
+      "Q1": {
+        "pass": true,
+        "value": "extension:prf=true"
+      },
+      "Q2": {
+        "pass": true,
+        "value": "prf.enabled=true"
+      },
+      "Q3": {
+        "pass": true,
+        "value": "output at creation, 32 bytes, 083ffcf147a71e95b1e0470f3748ce85f5bdf754265e300aa1335f58c507067a"
+      },
+      "Q4": {
+        "pass": true,
+        "value": "first.byteLength=32"
+      },
+      "Q5": {
+        "pass": true,
+        "value": "identical across runs, 083ffcf147a71e95b1e0470f3748ce85f5bdf754265e300aa1335f58c507067a"
+      },
+      "Q6": {
+        "pass": true,
+        "value": "A=083ffcf1...507067a B=5cdf5596a4752921a8eee46ef7066e350ec0f60a160e2d8e8a762ed55fc2fc89, differ"
+      },
+      "Q7": {
+        "pass": null,
+        "value": "not tested, second credential creation hit the cross-device chooser, NotAllowedError"
+      },
+      "Q8": {
+        "pass": true,
+        "value": "both returned in one assertion and differ"
+      },
+      "Q9": {
+        "pass": true,
+        "value": "user verification flag set, flags byte 0x1d"
+      },
+      "Q10": {
+        "pass": true,
+        "value": "scoped assertion with an allow-list of one succeeded even though the credential is discoverable"
+      },
+      "Q11a": {
+        "pass": true,
+        "value": "PublicKeyCredential undefined in a worker, constraint confirmed"
+      },
+      "Q11b": {
+        "pass": null,
+        "value": "not tested, internal assertion hit the cross-device chooser"
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "HIGH VALUE ROW (A1), and the key Android finding. A discoverable resident Google passkey supports PRF fully: stable 32 bytes, output at creation, UV enforced. Contrast with the device-bound row above: on Android, PRF requires a discoverable resident passkey, the non-discoverable path yields no PRF. Google Password Manager is cloud-backed so resident passkeys are not scarce there (the Q10 scarcity concern applies to hardware keys, not GPM), and Q10 still passed by asserting the resident credential with an allow-list. Q12 and Q13 not run. Q7 and Q11b blocked by the chooser."
+  },
+  {
+    "os": "Android 13",
+    "browser": "Chrome 150",
+    "provider": "Google Password Manager, discoverable resident passkey (residentKey required)",
+    "leg": "rust",
+    "results": {
+      "Q1": {
+        "pass": true,
+        "value": "extension:prf=true via Reflect"
+      },
+      "Q2": {
+        "pass": true,
+        "value": "prf.enabled=true"
+      },
+      "Q3": {
+        "pass": true,
+        "value": "output at creation, 32 bytes, 4d25ea9d5313aa78eff5e18d274a79b6f419efe9d5ed88bae3f8a3645d41f22f"
+      },
+      "Q4": {
+        "pass": true,
+        "value": "first length=32"
+      },
+      "Q5": {
+        "pass": true,
+        "value": "identical across runs, 4d25ea9d5313aa78eff5e18d274a79b6f419efe9d5ed88bae3f8a3645d41f22f"
+      },
+      "Q6": {
+        "pass": true,
+        "value": "A=4d25ea9d...41f22f B=fa080f440197e8cc43ada593eb2df4dbcf022fce54df773f1c49047c976dd8c2, differ"
+      },
+      "Q7": {
+        "pass": null,
+        "value": "not tested, second credential hit the chooser (no passkey on this device), NotAllowedError"
+      },
+      "Q8": {
+        "pass": true,
+        "value": "both returned in one assertion and differ"
+      },
+      "Q9": {
+        "pass": true,
+        "value": "user verification flag set, flags byte 0x1d"
+      },
+      "Q10": {
+        "pass": true,
+        "value": "scoped assertion with an allow-list of one succeeded"
+      },
+      "Q11a": {
+        "pass": true,
+        "value": "PublicKeyCredential undefined in a worker, constraint confirmed"
+      },
+      "Q11b": {
+        "pass": null,
+        "value": "not tested, internal assertion hit the chooser"
+      }
+    },
+    "reflect_fallbacks": [
+      "Q1 getClientCapabilities: no typed binding in web-sys 0.3.103, called via Reflect"
+    ],
+    "notes": "Confirms the design can drive the Android Google passkey PRF through web-sys, resident key required, one binding gap (getClientCapabilities). Matches the Android JS resident-passkey row. Q7 and Q11b blocked by the second-passkey chooser. Q12 and Q13 not run."
+  },
+  {
+    "os": "Android 13",
+    "browser": "Android System WebView (Chrome 150 wv), in a minimal WebView app",
+    "provider": "none (WebView)",
+    "leg": "js",
+    "results": {
+      "A5": {
+        "pass": true,
+        "value": "confirmed: the WebView has no WebAuthn. PublicKeyCredential is undefined, so passkeys and the PRF extension are unavailable. navigator.credentials exists (create and get are present, the password/federated surface) but the public-key part is absent, so navigator.credentials.create with a publicKey option cannot work. isSecureContext=true because it loaded over localhost via adb reverse, so this is a real WebView limitation, not an untrustworthy-origin false negative"
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "A5 measured directly in a real Android System WebView on the SM-M526BR, not inferred from compat data. Raw check: {hasPublicKeyCredential:false, hasCredentials:true, hasCredentialsCreate:true, hasCredentialsGet:true, isSecureContext:true}. Consequence: an app rendering in a WebView (how a shipping Dioxus Android app renders via wry) cannot use the browser WebAuthn PRF gate. Blitz/dioxus-native also omits WebAuthn by design, so either Dioxus rendering path forces the native Android Keystore route (A6) for a gate, or none."
+  },
+  {
+    "os": "Android 13",
+    "browser": "",
+    "provider": "Android Keystore (android-keyring 0.2.0)",
+    "leg": "native",
+    "results": {
+      "A6": {
+        "pass": true,
+        "value": "set_user_authentication_required(true) gates the key. Using it without a fresh authentication was refused (the Keystore threw), which is the gate. The ungated key (flag false) stored and read a secret with no prompt"
+      }
+    },
+    "reflect_fallbacks": [],
+    "notes": "A6 gates as expected, the Android counterpart of macOS N3, so Android needs no upstream work on the flag itself and is ahead of Apple where the equivalent flag is absent from keyring. Important sub-finding: the stock android-keyring 0.2.0 default credential path hardcodes set_user_authentication_required to false, so a plain keyring::Entry is NOT gated. Getting a gate means building the key yourself with the flag set (what this probe does). A full prompt-driven read past the refusal is the app's BiometricPrompt plus CryptoObject job, out of scope here. Provenance: android-keyring is a single-author dependency. Built by hand with NDK 28 (no Gradle) and run on the SM-M526BR. This closes the Dioxus-app question: since a WebView has no WebAuthn (A5), the native Keystore gate (A6) is the viable route, and it works."
   }
 ]
