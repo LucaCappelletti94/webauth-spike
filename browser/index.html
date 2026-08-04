@@ -57,6 +57,7 @@
   <legend>Properties</legend>
   <button id="assertAB">Assert A and B (Q6, Q8)</button>
   <button id="q7">Second credential (Q7)</button>
+  <button id="rptest">RP-independence (Apple): two RP ids, same user</button>
 </fieldset>
 
 <fieldset>
@@ -134,7 +135,7 @@ function loadState() {
 }
 loadState();
 
-function creationOptions(prfFirst, attachment, user) {
+function creationOptions(prfFirst, attachment, user, rpId) {
   const sel = { residentKey: ($("residentReq") && $("residentReq").checked) ? "required" : "discouraged", userVerification: "required" };
   // Q7 pins the platform authenticator so the second credential lands on the same
   // provider rather than the browser offering a security key or a cross-device phone.
@@ -142,7 +143,7 @@ function creationOptions(prfFirst, attachment, user) {
   const u = user || { id: USER_ID, name: USER_NAME, displayName: USER_DISPLAY };
   return { publicKey: {
     challenge: rand(),
-    rp:   { id: location.hostname, name: RP_NAME },
+    rp:   { id: rpId || location.hostname, name: RP_NAME },
     user: u,
     pubKeyCredParams: PUBKEY_PARAMS,
     // residentKey discouraged is load-bearing for Q10: the design stores
@@ -164,7 +165,7 @@ function saveTransports(idHex, arr) {
   } catch (e) { /* ignore */ }
 }
 
-function assertOptions(rawIdHex, first, second) {
+function assertOptions(rawIdHex, first, second, rpId) {
   const evalObj = second == null ? { first: enc(first) } : { first: enc(first), second: enc(second) };
   // Advertise the credential's reported transports. Note: on macOS after a browser restart
   // these platform passkeys were sometimes offered only cross-device (QR), and forcing the
@@ -175,7 +176,7 @@ function assertOptions(rawIdHex, first, second) {
   if (t.length) desc.transports = t;
   return { publicKey: {
     challenge: rand(),
-    rpId: location.hostname,
+    rpId: rpId || location.hostname,
     allowCredentials: [ desc ],
     userVerification: "required",
     extensions: { prf: { eval: evalObj } },
@@ -289,6 +290,30 @@ $("q7").onclick = async () => {
     const h2 = toHex(a2.getClientExtensionResults().prf.results.first);
     record("Q7", h1 !== h2, h1 !== h2 ? `credential-bound (differ): cred1=${h1} cred2=${h2}` : `ACCOUNT-SCOPED, credential dependence FAILS (identical): cred1=${h1} cred2=${h2}`);
   } catch (e) { record("Q7", false, "error: " + e); }
+};
+
+// ---- Q7b: RP independence. Two credentials at different rp.id (full host vs registrable
+// suffix), same user id, same input. Same output means the PRF ignores the RP and is keyed
+// by user id (the Apple behavior we saw cross-device); different means it is RP-bound. ----
+$("rptest").onclick = async () => {
+  const host = location.hostname;
+  const parts = host.split(".");
+  if (parts.length < 3) { log("need a subdomain origin (e.g. sub.example.com) for this test", "fail"); return; }
+  const suffix = parts.slice(1).join(".");
+  try {
+    const cA = await navigator.credentials.create(creationOptions(INPUT_A, "platform", undefined, host));
+    const idA = toHex(cA.rawId);
+    const aA = await navigator.credentials.get(assertOptions(idA, INPUT_A, null, host));
+    const hA = toHex(aA.getClientExtensionResults().prf.results.first);
+    const cB = await navigator.credentials.create(creationOptions(INPUT_A, "platform", undefined, suffix));
+    const idB = toHex(cB.rawId);
+    const aB = await navigator.credentials.get(assertOptions(idB, INPUT_A, null, suffix));
+    const hB = toHex(aB.getClientExtensionResults().prf.results.first);
+    const same = hA === hB;
+    record("Q7b", null, same
+      ? `RP-INDEPENDENT (same output for rp.id=${host} and rp.id=${suffix}, same user): ${hA}`
+      : `RP-bound (differ): host(${host})=${hA} suffix(${suffix})=${hB}`);
+  } catch (e) { record("Q7b", false, "error: " + e); }
 };
 
 // ---- Q11a: creation from a worker must fail (PublicKeyCredential not exposed there) ----
